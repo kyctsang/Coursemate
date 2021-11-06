@@ -29,13 +29,13 @@ export default {
       favicon: './assets/favicon.png'
     },
     extra: {
-      apiKey: 'AIzaSyCYG3qrFTjGDjgHHMedoPxnQO1vY0oaXME',
-      authDomain: 'coursemate-66ee7.firebaseapp.com',
-      projectId: 'coursemate-66ee7',
-      storageBucket: 'coursemate-66ee7.appspot.com',
-      messagingSenderId: '322576591088',
-      appId: '1:322576591088:web:6942ba823ecc39a74c3a35',
-      databaseURL: 'https://coursemate-66ee7-default-rtdb.asia-southeast1.firebasedatabase.app/'
+      apiKey: process.env.API_KEY,
+      authDomain: process.env.AUTH_DOMAIN,
+      projectId: process.env.PROJECT_ID,
+      storageBucket: process.env.STORAGE_BUCKET,
+      messagingSenderId: process.env.MESSAGING_SENDER_ID,
+      appId: process.env.APP_ID,
+      databaseURL: process.env.DATABASE_URL
     }
   }
 };
