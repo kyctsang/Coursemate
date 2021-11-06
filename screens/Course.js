@@ -19,11 +19,12 @@ export const Course = ({navigation}) => {
     const slot = ['', '08:30','09:30','10:30','11:30','12:30','13:30','14:30','15:30','16:30','17:30','18:30','19:30']
 
     function gotData(data){
-        console.log(data.val())
+        // console.log(data.val())
         // data.val().forEach(element => {
         //     console.log("CODE: " + element.code)
         //     console.log("TITLE: " + element.title)
         // });
+        console.log("Fetched")
         setCourses(data.val())
         // console.log(courses) 
 
@@ -37,24 +38,36 @@ export const Course = ({navigation}) => {
         setSearch(text)
     }
 
-    function selectCourse(code){
+    function selectCourse(code, section){
+        if (selected.length < 6){
+            const temp = selected
+            temp.push({code, section})
+            console.log(...temp)
+            setSelected([...temp])
+        }else{
+            alert("You can select up to 6 courses only!")
+        }
+    }
+
+    function deselectCourse(index){
         const temp = selected
-        temp.push(code)
-        console.log(...temp)
-        console.log(typeof({...temp}))
+        temp.splice(index,1)
+        // console.log(...temp)
         setSelected([...temp])
+        console.log(selected)
+        // alert(index)
     }
 
     const courseList = courses.map((course, index) => {
-        console.log(course.section)
+        // console.log(course.section)
         return(
-            Object.entries(course.section).map((item, index) => {
+            Object.entries(course.section).map((section, index) => {
                 var timeslot = ""
                 var check_day = 0
                 var temp = [0,0,0,0,0,0]
                 var temp2 = [0,0,0,0,0,0]
                 var pad = ""
-                item[1].map((x) => {
+                section[1].map((x) => {
                     temp[x[0]] += 1
                     if (check_day != x[0]){
                         temp2[x[0]] = parseInt(x[2])
@@ -70,8 +83,8 @@ export const Course = ({navigation}) => {
                     }
                 })
                 return(
-                    <TouchableOpacity style={styles.button} key={index} onPress={() => selectCourse(course.code)}>
-                        <Text>{course.code} {item[0]}</Text>
+                    <TouchableOpacity style={styles.button} key={index} onPress={() => selectCourse(course.code, section)}>
+                        <Text>{course.code} {section[0]}</Text>
                         <Text>{timeslot}</Text>
                     </TouchableOpacity>
                 )
@@ -81,7 +94,13 @@ export const Course = ({navigation}) => {
 
     const selectedCourses = selected.map((course, index) => {
         return(
-            <Text key={index}>{course}</Text>
+            <TouchableOpacity style={styles.selectedContainer} key={index} onPress={() => deselectCourse(index)}>
+                <Text key={index}>{course.code} {course.section[0]}</Text>
+                <MaterialCommunityIcons 
+                    name={'lock'}
+                    size={16}
+                />
+            </TouchableOpacity>
         )
     })
 
@@ -131,6 +150,11 @@ const styles = StyleSheet.create({
     selectContainer: {
         padding: 12,
         height: 300
+    },
+    selectedContainer: {
+        borderRadius: 4,
+        flexDirection: 'row',
+        padding: 12
     },
     button: {
       alignItems: "center",
