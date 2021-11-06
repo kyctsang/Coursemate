@@ -153,7 +153,7 @@ export const Course = ({navigation}) => {
             <TouchableOpacity style={styles.selectedContainer} key={index} onPress={() => deselectCourse(index)}>
                 <Text key={index}>{course.code} {course.section[0]}</Text>
                 <MaterialCommunityIcons 
-                    name={'lock'}
+                    name={'window-close'}
                     size={16}
                 />
             </TouchableOpacity>
@@ -164,10 +164,9 @@ export const Course = ({navigation}) => {
         <ScreenContainer style={styles.container}>
             <View style={styles.inputContainer}>
                 <MaterialCommunityIcons
-                    name={'lock'}
+                    name={'magnify'}
                     size={20}
                     iconColor = '#000'
-                    style={'lock'}
                 />
                 <TextInput
                     style={styles.input}
