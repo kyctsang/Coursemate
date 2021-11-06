@@ -42,7 +42,7 @@ export const Course = ({navigation}) => {
         if (selected.length < 6){
             const temp = selected
             temp.push({code, section})
-            console.log(...temp)
+            // console.log(...temp)
             setSelected([...temp])
         }else{
             alert("You can select up to 6 courses only!")
@@ -54,8 +54,40 @@ export const Course = ({navigation}) => {
         temp.splice(index,1)
         // console.log(...temp)
         setSelected([...temp])
-        console.log(selected)
+        // console.log(selected)
         // alert(index)
+    }
+
+    function check(){
+        var slot_tuple = {};
+        selected.forEach((course, index) => {
+            course.section[1].forEach((slot, index2) => {
+                if (typeof(slot_tuple[slot]) == 'undefined' ){
+                    slot_tuple[slot] = [course.code + " " + course.section[0]]
+                }else{
+                    slot_tuple[slot].push(course.code + " " + course.section[0])
+                }
+                // console.log(slot)
+            })
+        })
+        // console.log(slot_tuple)
+        var valid = true
+        var found = ""
+        Object.entries(slot_tuple).map((slot, index) => {
+            if (slot[1].length > 1 && valid){
+                console.log("Time clash")
+                slot[1].forEach((course, index) => {
+                    console.log(course)
+                    found += course+'\n'
+                })
+                valid = false
+            }
+        })
+        if (valid){
+            alert("No time clash!")
+        }else{
+            alert("Time clash!\n" + found)
+        }
     }
 
     const courseList = courses.map((course, index) => {
@@ -83,7 +115,7 @@ export const Course = ({navigation}) => {
                     }
                 })
                 return(
-                    <TouchableOpacity style={styles.button} key={index} onPress={() => selectCourse(course.code, section)}>
+                    <TouchableOpacity style={styles.courseList} key={index} onPress={() => selectCourse(course.code, section)}>
                         <Text>{course.code} {section[0]}</Text>
                         <Text>{timeslot}</Text>
                     </TouchableOpacity>
@@ -123,6 +155,10 @@ export const Course = ({navigation}) => {
                 <Text>Selected</Text>
                 {selectedCourses}
             </View>
+            <Button 
+                title='Check'
+                onPress={() => check()}
+            />
             <ScrollView style={styles.scrollView}>
                 {courseList}
             </ScrollView>
@@ -156,7 +192,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         padding: 12
     },
-    button: {
+    courseList: {
       alignItems: "center",
       backgroundColor: "#DDDDDD",
       borderWidth: 2,
