@@ -2,6 +2,8 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useContext } from "react";
 import { View, Text, StyleSheet, Button } from "react-native";
 
+import { Typography, Colors, Base } from '../styles';
+
 import { IconButton } from '../components';
 import Firebase from '../config/firebase';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
@@ -30,7 +32,7 @@ export const Home = ({ navigation }) => {
         <IconButton
           name='logout'
           size={24}
-          color='#fff'
+          color='#000'
           onPress={handleSignOut}
         />
       </View>
@@ -41,8 +43,7 @@ export const Home = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#e93b81',
+    ...Base.base,
     paddingTop: 50,
     paddingHorizontal: 12
   },
@@ -53,13 +54,9 @@ const styles = StyleSheet.create({
     marginBottom: 24
   },
   title: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#fff'
+    ...Typography.title
   },
   text: {
-    fontSize: 16,
-    fontWeight: 'normal',
-    color: '#fff'
+    ...Typography.text
   }
 });

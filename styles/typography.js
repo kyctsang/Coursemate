@@ -13,3 +13,9 @@ export const appName = {
     alignSelf: 'center',
     paddingBottom: 20
 };
+
+export const text = {
+    fontSize: 16,
+    fontWeight: 'normal',
+    color: '#000'
+};
