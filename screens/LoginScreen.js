@@ -38,6 +38,7 @@ export default function LoginScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <StatusBar style='dark-content' />
+      <Text style={styles.appName}>CourseMate</Text>
       <Text style={styles.title}>Login</Text>
       <InputField
         inputStyle={{
@@ -105,6 +106,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '600',
+    color: '#fff',
+    alignSelf: 'center',
+    paddingBottom: 24
+  },
+  appName: {
+    fontSize: 24,
+    fontWeight: 'bold',
     color: '#fff',
     alignSelf: 'center',
     paddingBottom: 24
