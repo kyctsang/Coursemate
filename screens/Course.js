@@ -13,6 +13,8 @@ const ScreenContainer = ({ children }) => (
 export const Course = ({navigation}) => {
     const [ courses, setCourses ] = useState([])
     const [ search, setSearch ] = useState('')
+    const [ selected, setSelected ] = useState([])
+
     function gotData(data){
         // console.log(data.val())
         // data.val().forEach(element => {
@@ -28,18 +30,33 @@ export const Course = ({navigation}) => {
         ref.on('value', gotData);
     }, []);
     
-    const courseList = courses.map((course) => {
+    function searchCourse(text){
+        setSearch(text)
+    }
+
+    function selectCourse(code){
+        const temp = selected
+        temp.push(code)
+        console.log(...temp)
+        console.log(typeof({...temp}))
+        setSelected([...temp])
+    }
+
+    const courseList = courses.map((course, index) => {
         return(
-            <TouchableOpacity style={styles.button} key={course.code}>
+            <TouchableOpacity style={styles.button} key={index} onPress={() => selectCourse(course.code)}>
                 <Text>{course.code}</Text>
                 <Text>{course.title}</Text>
             </TouchableOpacity>
         )
     })
 
-    function searchCourse(text){
-        setSearch(text)
-    }
+    const selectedCourses = selected.map((course, index) => {
+        return(
+            <Text key={index}>{course}</Text>
+        )
+    })
+
     return(
         <ScreenContainer style={styles.container}>
             <View style={styles.inputContainer}>
@@ -57,11 +74,10 @@ export const Course = ({navigation}) => {
             </View>
             <View style={styles.selectContainer}>
                 <Text>Selected</Text>
-            
+                {selectedCourses}
             </View>
-            {/* <Text>{course}</Text> */}
             <ScrollView style={styles.scrollView}>
-            {courseList}
+                {courseList}
             </ScrollView>
         </ScreenContainer>
     )
@@ -91,9 +107,12 @@ const styles = StyleSheet.create({
     button: {
       alignItems: "center",
       backgroundColor: "#DDDDDD",
+      borderWidth: 2,
+      borderBottomWidth: 0,
       padding: 10
     },
     scrollView: {
+        borderWidth: 2,
         height: 300
       },
   });
