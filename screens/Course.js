@@ -3,6 +3,7 @@ import { View, Text, Button, ScrollView, TouchableOpacity, StyleSheet, TextInput
 
 import * as firebase from 'firebase';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import 'firebase/database';
 
 const database = firebase.database();
 
@@ -14,9 +15,11 @@ export const Course = ({navigation}) => {
     const [ courses, setCourses ] = useState([])
     const [ search, setSearch ] = useState('')
     const [ selected, setSelected ] = useState([])
+    const day = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri']
+    const slot = ['', '08:30','09:30','10:30','11:30','12:30','13:30','14:30','15:30','16:30','17:30','18:30','19:30']
 
     function gotData(data){
-        // console.log(data.val())
+        console.log(data.val())
         // data.val().forEach(element => {
         //     console.log("CODE: " + element.code)
         //     console.log("TITLE: " + element.title)
@@ -43,11 +46,36 @@ export const Course = ({navigation}) => {
     }
 
     const courseList = courses.map((course, index) => {
+        console.log(course.section)
         return(
-            <TouchableOpacity style={styles.button} key={index} onPress={() => selectCourse(course.code)}>
-                <Text>{course.code}</Text>
-                <Text>{course.title}</Text>
-            </TouchableOpacity>
+            Object.entries(course.section).map((item, index) => {
+                var timeslot = ""
+                var check_day = 0
+                var temp = [0,0,0,0,0,0]
+                var temp2 = [0,0,0,0,0,0]
+                var pad = ""
+                item[1].map((x) => {
+                    temp[x[0]] += 1
+                    if (check_day != x[0]){
+                        temp2[x[0]] = parseInt(x[2])
+                    }
+                    check_day=x[0]
+                })
+                temp.forEach((element, index) => {
+                    if (element != 0){
+                        timeslot += pad + day[index] + slot[temp2[index]] + '-' + slot[temp2[index]+element]
+                    }
+                    if (timeslot != ""){
+                        pad = "   "
+                    }
+                })
+                return(
+                    <TouchableOpacity style={styles.button} key={index} onPress={() => selectCourse(course.code)}>
+                        <Text>{course.code} {item[0]}</Text>
+                        <Text>{timeslot}</Text>
+                    </TouchableOpacity>
+                )
+            })
         )
     })
 
