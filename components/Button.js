@@ -51,8 +51,8 @@ const styles = StyleSheet.create({
   base: {
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 42,
-    borderRadius: 4,
+    minHeight: 40,
+    borderRadius: 10,
     paddingHorizontal: 12
   }
 });

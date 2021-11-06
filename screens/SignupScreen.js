@@ -3,6 +3,8 @@ import React from 'react';
 import { useState } from 'react';
 import { StyleSheet, Text, View, Button as RNButton } from 'react-native';
 
+import { Typography, Colors, Base } from '../styles'
+
 import { Button, InputField, ErrorMessage } from '../components';
 import Firebase from '../config/firebase';
 
@@ -84,13 +86,18 @@ export default function SignupScreen({ navigation }) {
         tileColor='#fff'
         titleSize={20}
         containerStyle={{
-          marginBottom: 24
+          marginBottom: 12
         }}
       />
-      <RNButton
+      <Button
         onPress={() => navigation.navigate('Login')}
-        title='Go to Login'
-        color='#fff'
+        backgroundColor={Colors.button2}
+        title='Go back to Login'
+        tileColor='#fff'
+        titleSize={16}
+        containerStyle={{
+          marginBottom: 24
+        }}
       />
     </View>
   );
@@ -98,23 +105,12 @@ export default function SignupScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#e93b81',
-    paddingTop: 50,
-    paddingHorizontal: 12
+    ...Base.auth
   },
   title: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#fff',
-    alignSelf: 'center',
-    paddingBottom: 24
+    ...Typography.title
   },
   appName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-    alignSelf: 'center',
-    paddingBottom: 24
+    ...Typography.appName
   }
 });

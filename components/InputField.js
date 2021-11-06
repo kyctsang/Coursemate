@@ -43,7 +43,7 @@ const InputField = ({
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 4,
+    borderRadius: 10,
     flexDirection: 'row',
     padding: 12
   },

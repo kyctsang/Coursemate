@@ -3,6 +3,9 @@ import React from 'react';
 import { useState } from 'react';
 import { StyleSheet, Text, View, Button as RNButton } from 'react-native';
 
+import { Typography, Colors, Base } from '../styles';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
 import { Button, InputField, ErrorMessage } from '../components';
 import Firebase from '../config/firebase';
 
@@ -79,18 +82,23 @@ export default function LoginScreen({ navigation }) {
       {loginError ? <ErrorMessage error={loginError} visible={true} /> : null}
       <Button
         onPress={onLogin}
-        backgroundColor='#f57c00'
+        backgroundColor={Colors.button1}
         title='Login'
         tileColor='#fff'
         titleSize={20}
         containerStyle={{
-          marginBottom: 24
+          marginBottom: 12
         }}
       />
-      <RNButton
+      <Button
         onPress={() => navigation.navigate('Signup')}
-        title='Go to Signup'
-        color='#fff'
+        backgroundColor={Colors.button2}
+        title='Sign up for an account'
+        tileColor='#fff'
+        titleSize={16}
+        containerStyle={{
+          marginBottom: 24
+        }}
       />
     </View>
   );
@@ -98,23 +106,12 @@ export default function LoginScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#e93b81',
-    paddingTop: 50,
-    paddingHorizontal: 12
+    ...Base.auth
   },
   title: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#fff',
-    alignSelf: 'center',
-    paddingBottom: 24
+    ...Typography.title
   },
   appName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-    alignSelf: 'center',
-    paddingBottom: 24
+    ...Typography.appName
   }
 });
