@@ -10,3 +10,9 @@ export const auth = {
     paddingTop: 100,
     paddingHorizontal: 12
 };
+
+export const page = {
+    ...base,
+    paddingTop: 20,
+    paddingHorizontal: 12
+};
