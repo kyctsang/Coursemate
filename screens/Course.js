@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, Button, ScrollView, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 
 import * as firebase from 'firebase';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const database = firebase.database();
 
@@ -11,14 +12,15 @@ const ScreenContainer = ({ children }) => (
 
 export const Course = ({navigation}) => {
     const [ courses, setCourses ] = useState([])
+    const [ search, setSearch ] = useState('')
     function gotData(data){
-        console.log(data.val())
-        data.val().forEach(element => {
-            console.log("CODE: " + element.code)
-            console.log("TITLE: " + element.title)
-        });
+        // console.log(data.val())
+        // data.val().forEach(element => {
+        //     console.log("CODE: " + element.code)
+        //     console.log("TITLE: " + element.title)
+        // });
         setCourses(data.val())
-        console.log(courses) 
+        // console.log(courses) 
 
     }
     useEffect(() => {
@@ -28,19 +30,70 @@ export const Course = ({navigation}) => {
     
     const courseList = courses.map((course) => {
         return(
-            <Text key={course.code}>{course.code}</Text>
-            // console.log(course.code + course.title)
+            <TouchableOpacity style={styles.button} key={course.code}>
+                <Text>{course.code}</Text>
+                <Text>{course.title}</Text>
+            </TouchableOpacity>
         )
     })
 
+    function searchCourse(text){
+        setSearch(text)
+    }
     return(
-        <ScreenContainer>
-            <Text>Course</Text>
+        <ScreenContainer style={styles.container}>
+            <View style={styles.inputContainer}>
+                <MaterialCommunityIcons
+                    name={'lock'}
+                    size={20}
+                    iconColor = '#000'
+                    style={'lock'}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Search Course"
+                    onChangeText={text => searchCourse(text)}
+                />
+            </View>
+            <View style={styles.selectContainer}>
+                <Text>Selected</Text>
+            
+            </View>
             {/* <Text>{course}</Text> */}
-            <ScrollView>
+            <ScrollView style={styles.scrollView}>
             {courseList}
             </ScrollView>
         </ScreenContainer>
     )
     
 }
+
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: "center",
+      paddingHorizontal: 10
+    },
+    inputContainer: {
+        borderRadius: 4,
+        flexDirection: 'row',
+        padding: 12
+    },
+    input: {
+        flex: 1,
+        width: '100%',
+        fontSize: 18
+    },
+    selectContainer: {
+        padding: 12,
+        height: 300
+    },
+    button: {
+      alignItems: "center",
+      backgroundColor: "#DDDDDD",
+      padding: 10
+    },
+    scrollView: {
+        height: 300
+      },
+  });
