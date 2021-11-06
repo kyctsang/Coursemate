@@ -13,19 +13,20 @@ const ScreenContainer = ({ children }) => (
 
 export const Course = ({navigation}) => {
     const [ courses, setCourses ] = useState([])
-    const [ search, setSearch ] = useState('')
+    const [ courses2, setCourses2 ] = useState([])
     const [ selected, setSelected ] = useState([])
     const day = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri']
     const slot = ['', '08:30','09:30','10:30','11:30','12:30','13:30','14:30','15:30','16:30','17:30','18:30','19:30']
 
     function gotData(data){
-        // console.log(data.val())
+        console.log(data.val())
         // data.val().forEach(element => {
         //     console.log("CODE: " + element.code)
         //     console.log("TITLE: " + element.title)
         // });
         console.log("Fetched")
         setCourses(data.val())
+        setCourses2(data.val())
         // console.log(courses) 
 
     }
@@ -35,15 +36,38 @@ export const Course = ({navigation}) => {
     }, []);
     
     function searchCourse(text){
-        setSearch(text)
+        var temp = []
+        Object.entries(courses2).map((course, index) => {
+            // console.log(course[1].code)
+            // console.log("BREAK")
+            if (course[1].code.includes(text.toUpperCase())){
+                console.log(course[1].code)
+                temp.push(course[1])
+            }
+        })
+        console.log(temp)
+        setCourses(temp)
     }
 
     function selectCourse(code, section){
         if (selected.length < 6){
-            const temp = selected
-            temp.push({code, section})
-            // console.log(...temp)
-            setSelected([...temp])
+            var duplicate = false
+            selected.forEach((course, index) => {
+                console.log(course.code)
+                console.log(code)
+                if (course.code == code){
+                    duplicate = true
+                }
+            })
+            if (duplicate){
+                alert(code + " is selected previously!")
+            }else{
+                const temp = selected
+                temp.push({code, section})
+                // console.log(...temp)
+                setSelected([...temp])
+            }
+            
         }else{
             alert("You can select up to 6 courses only!")
         }
