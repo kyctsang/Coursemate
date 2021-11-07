@@ -1,8 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { View, Text, StyleSheet, Button } from "react-native";
 
 import { Typography, Colors, Base } from '../styles';
+import InsetShadow from 'react-native-inset-shadow'
 
 import { IconButton } from '../components';
 import Firebase from '../config/firebase';
@@ -19,7 +20,22 @@ const ScreenContainer = ({ children }) => (
 
 export const Home = ({ navigation }) => {
   const [privacy, setPrivacy] = useState('public')
+  const [courses, setCourses] = useState({})
   const { user } = useContext(AuthenticatedUserContext);
+
+  useEffect(() => {
+    const ref = db.ref('users/'+user.uid)
+    ref.on('value', (data) => {
+      console.log(data.val())
+      console.log('users/'+user.uid)
+      if(data.val()==null){
+        console.log("NULL!!!")
+        ref.set({
+            public: true
+        })
+      }
+    })
+  }, []);
 
   const handleSignOut = async () => {
     try {
@@ -28,19 +44,23 @@ export const Home = ({ navigation }) => {
       console.log(error);
     }
   };
+  if (Object.keys(courses).length==0) {
+    const ref = db.ref('users/'+user.uid+'/courses')
+    ref.on('value', (data) => {
+      // console.log(data.val())
+      setCourses(data.val())
+    })
+  }
 
-  const ref = db.ref('users/'+user.uid)
-  ref.on('value', (data) => {
-    console.log(data.val())
-    console.log('users/'+user.uid)
-    const identifier = user.uid
-    if(data.val()==null){
-      console.log("NULL!!!")
-      ref.set({
-          public: true
-      })
-    }
+  const selectedCourses = Object.entries(courses).map((course, index) => {
+    console.log(course[0] + " " + course[1])
+    return(
+      <View key={index} style={styles.courses}>
+          <Text style={styles.courseTitle}>{course[0]} {course[1]}</Text>
+      </View>
+    )
   })
+  
 
   return (
   <ScreenContainer>
@@ -56,6 +76,9 @@ export const Home = ({ navigation }) => {
       </View>
       <Text style={styles.text}>Your UID is: {user.uid} </Text>
       <Text>User profile: {privacy}</Text>
+      <View style={styles.coursesContainer}>
+        {selectedCourses}
+      </View>
   </ScreenContainer>
   );
 };
@@ -71,6 +94,24 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 24
+  },
+  coursesContainer: {
+    position: 'absolute', 
+    bottom: 100, 
+    width: '90%', 
+    justifyContent: 'center'
+  },
+  courses: {
+    height: 50, 
+    borderWidth:3, 
+    borderRadius:5, 
+    margin:3, 
+    justifyContent: 'center',
+    backgroundColor: '#fcba03'
+  },
+  courseTitle: {
+    fontWeight: 'bold', 
+    textAlign: 'center'
   },
   title: {
     ...Typography.title

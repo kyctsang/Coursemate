@@ -24,12 +24,18 @@ export const Course = ({ navigation }) => {
     const [selected, setSelected] = useState([])
     const [message, setMessage] = useState("")
     const [clashedCourse, setClashedCourse] = useState("")
+    const [savable, setSavable] = useState(false)
     const { dismiss, show, modalProps } = useBottomModal();
-
 
     const { user } = useContext(AuthenticatedUserContext);
     const day = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri']
     const slot = ['', '08:30', '09:30', '10:30', '11:30', '12:30', '13:30', '14:30', '15:30', '16:30', '17:30', '18:30', '19:30']
+
+
+    useEffect(() => {
+        const ref = db.ref('courses/');
+        ref.on('value', gotCourses);
+    }, []);
 
     function gotCourses(data) {
         // console.log(data.val())
@@ -43,19 +49,7 @@ export const Course = ({ navigation }) => {
         // console.log(courses) 
     }
 
-    useEffect(() => {
-        var ref = db.ref('course/');
-        ref.on('value', gotCourses);
-
-        // ref = db.ref('users/'+user.uid);
-        // ref.on('value', (data) => {
-        //     console.log(data.val())
-        //     console.log('users/'+user.uid)
-        //     // console.log(user.uid)
-        // })
-    }, []);
-
-    function searchCourse(text){
+    function handleSearch(text){
         var temp = {}
         // console.log("START")
         Object.entries(courses2).map((course, index) => {
@@ -70,7 +64,7 @@ export const Course = ({ navigation }) => {
         setCourses(temp)
     }
 
-    function selectCourse(code, section){
+    function handleSelect(code, section){
         // console.log("CODE: " + code + ", SECTION: " + section)
         if (selected.length < 6) {
             var duplicate = false
@@ -84,6 +78,7 @@ export const Course = ({ navigation }) => {
             if (duplicate) {
                 setMessage(code + " is selected already! 🤨")
                 setClashedCourse("")
+                setSavable(false)
                 show()
             } else {
                 const temp = selected
@@ -96,11 +91,12 @@ export const Course = ({ navigation }) => {
         } else {
             setMessage("You can select up to 6 courses only! 🤥")
             setClashedCourse("")
+            setSavable(false)
             show()
         }
     }
 
-    function deselectCourse(index) {
+    function handleDeselect(index) {
         const temp = selected
         temp.splice(index, 1)
         // console.log(...temp)
@@ -109,7 +105,7 @@ export const Course = ({ navigation }) => {
         // alert(index)
     }
 
-    function check() {
+    function handleCheck() {
         var slot_tuple = {};
         selected.forEach((course, index) => {
             course.section[1].forEach((slot, index2) => {
@@ -138,11 +134,31 @@ export const Course = ({ navigation }) => {
             // alert("No time clash!")
             setMessage("No time clash! 🤩")
             setClashedCourse("")
+            setSavable(true)
         } else {
             // alert("Time clash!\n" + found)
             setMessage("Time clash! 😮‍💨\n\n")
             setClashedCourse(found)
+            setSavable(false)
         }
+    }
+
+    function handleSave(){
+        alert("SAVED")
+        const ref = db.ref('users/'+user.uid)
+        // console.log(selected)
+        var temp = {}
+        selected.forEach((course, index) => {
+            temp[course.code] = course.section[0]
+        })
+        // console.log(temp)
+        ref.update({
+            courses: temp
+        })
+        // ref.on('value', (data) => {
+        //     console.log(data.val())
+        // })
+
     }
 
     const courseList = Object.entries(courses).map((course, index) => {
@@ -175,7 +191,7 @@ export const Course = ({ navigation }) => {
                 return (
                     <View key={index2} style={{ height: 70 }}>
                         <InsetShadow>
-                            <TouchableOpacity style={styles.courseList} onPress={() => selectCourse(course[0], timeslots)}>
+                            <TouchableOpacity style={styles.courseList} onPress={() => handleSelect(course[0], timeslots)}>
                                 <Text style={styles.courseTitle}>{course[0]} {timeslots[0]}</Text>
                                 <Text>{timeslot}</Text>
                             </TouchableOpacity>
@@ -188,7 +204,7 @@ export const Course = ({ navigation }) => {
 
     const selectedCourses = selected.map((course, index) => {
         return (
-            <TouchableOpacity style={styles.selectedItem} key={index} onPress={() => deselectCourse(index)}>
+            <TouchableOpacity style={styles.selectedItem} key={index} onPress={() => handleDeselect(index)}>
                 <Text>{course.code} {course.section[0]}</Text>
                 <MaterialCommunityIcons
                     name={'window-close'}
@@ -200,18 +216,6 @@ export const Course = ({ navigation }) => {
 
     return (
         <ScreenContainer>
-            {/* <View style={styles.inputContainer}>
-                <MaterialCommunityIcons
-                    name={'magnify'}
-                    size={20}
-                    iconColor = '#000'
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Search Course"
-                    onChangeText={text => searchCourse(text)}
-                />
-            </View> */}
             <View style={styles.searchBar}>
                 <InputField
                     inputStyle={{
@@ -229,7 +233,7 @@ export const Course = ({ navigation }) => {
                     value={courseCode}
                     onChangeText={text => {
                         setCourseCode(text.toUpperCase());
-                        searchCourse(text.toUpperCase());
+                        handleSearch(text.toUpperCase());
                     }}
                 />
             </View>
@@ -245,7 +249,7 @@ export const Course = ({ navigation }) => {
             <View style={{ paddingHorizontal: 12 }}>
                 <Button
                 onPress={() => { 
-                    check(); 
+                    handleCheck(); 
                     show();
                 }}
                 backgroundColor={Colors.button1}
@@ -261,6 +265,18 @@ export const Course = ({ navigation }) => {
                 <TouchableOpacity style={styles.fill} onPress={dismiss}>
                     <Text style={styles.message}>{message}</Text>
                     <Text style={styles.clashed}>{clashedCourse}</Text>
+                    {savable 
+                    ? <View style={styles.saveContainer}>
+                        <Button 
+                        onPress={() => { 
+                            handleSave(); 
+                        }}
+                        backgroundColor={Colors.button1}
+                        title={'Save'}
+                        titleSize={20}
+                        />
+                    </View> 
+                    : null}
                     <Text style={styles.close}>Tap to close</Text>
                 </TouchableOpacity>
             </BottomModal>
@@ -273,16 +289,6 @@ const styles = StyleSheet.create({
     container: {
         ...Base.page
     },
-    // inputContainer: {
-    //     borderRadius: 4,
-    //     flexDirection: 'row',
-    //     padding: 15
-    // },
-    // input: {
-    //     flex: 1,
-    //     width: '100%',
-    //     fontSize: 18
-    // },
     searchBar: {
         paddingHorizontal: 12
     },
@@ -328,8 +334,6 @@ const styles = StyleSheet.create({
     },
     scrollView: {
         display: 'flex',
-        height: 100, // ?
-        // borderWidth: 2,
         backgroundColor: '#fff'
     },
     fill: { 
@@ -345,10 +349,14 @@ const styles = StyleSheet.create({
     clashed: {
         fontSize: 25
     },
+    saveContainer: {
+        position: 'absolute', 
+        bottom: 300, 
+        width: '50%'
+    },
     close: {
         fontSize: 15,
         color: '#c2b38a',
-        // fontWeight: '400',
         position: 'absolute',
         bottom: 200
     }
