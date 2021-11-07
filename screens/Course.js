@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, ScrollView, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import { useBottomModal, BottomModal } from 'react-native-lightning-modal';
 
 import { Typography, Colors, Base } from '../styles';
 import { InputField, ErrorMessage } from '../components';
@@ -19,6 +20,9 @@ export const Course = ({ navigation }) => {
     const [courses, setCourses] = useState([])
     const [courses2, setCourses2] = useState([])
     const [selected, setSelected] = useState([])
+    const [checkResult, setCheckResult] = useState("")
+    const [clashedCourse, setClashedCourse] = useState("")
+    const { dismiss, show, modalProps } = useBottomModal();
     const day = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri']
     const slot = ['', '08:30', '09:30', '10:30', '11:30', '12:30', '13:30', '14:30', '15:30', '16:30', '17:30', '18:30', '19:30']
 
@@ -112,9 +116,13 @@ export const Course = ({ navigation }) => {
             }
         })
         if (valid) {
-            alert("No time clash!")
+            // alert("No time clash!")
+            setCheckResult("No time clash! 🤩")
+            setClashedCourse("")
         } else {
-            alert("Time clash!\n" + found)
+            // alert("Time clash!\n" + found)
+            setCheckResult("Time clash! 😮‍💨\n\n")
+            setClashedCourse(found)
         }
     }
 
@@ -206,8 +214,15 @@ export const Course = ({ navigation }) => {
             </View>
             <Button
                 title='Check'
-                onPress={() => check()}
+                onPress={() => {check(); show()}}
             />
+            <BottomModal backdropColor="rgba(0,0,0,0.5)" height={600} {...modalProps} >
+                <TouchableOpacity style={styles.fill} onPress={dismiss}>
+                    <Text style={styles.result}>{checkResult}</Text>
+                    <Text style={styles.clashed}>{clashedCourse}</Text>
+                    <Text style={styles.close}>Tap to close</Text>
+                </TouchableOpacity>
+            </BottomModal>
         </ScreenContainer>
     )
 
@@ -252,4 +267,22 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         backgroundColor: Colors.background
     },
+    fill: { 
+        flex: 5/6,
+        alignItems: 'center'
+    },
+    result:{
+        fontSize: 35
+    },
+    clashed:{
+        fontSize: 25
+    },
+    close:{
+        fontSize: 15,
+        color: '#c2b38a',
+        // fontWeight: '400',
+        position: 'absolute',
+        bottom: 150
+    }
+
 });
