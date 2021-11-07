@@ -44,7 +44,8 @@ export const Home = ({ navigation }) => {
       console.log(error);
     }
   };
-  if (Object.keys(courses).length==0) {
+
+  if (typeof (courses) == 'undefined') {
     const ref = db.ref('users/'+user.uid+'/courses')
     ref.on('value', (data) => {
       // console.log(data.val())
