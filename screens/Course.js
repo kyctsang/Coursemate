@@ -25,6 +25,7 @@ export const Course = ({ navigation }) => {
     const [message, setMessage] = useState("")
     const [clashedCourse, setClashedCourse] = useState("")
     const [savable, setSavable] = useState(false)
+    const [disable, setDisable] = useState(false)
     const { dismiss, show, modalProps } = useBottomModal();
 
     const { user } = useContext(AuthenticatedUserContext);
@@ -141,6 +142,7 @@ export const Course = ({ navigation }) => {
             setClashedCourse(found)
             setSavable(false)
         }
+        setDisable(false)
     }
 
     function handleSave(){
@@ -155,10 +157,7 @@ export const Course = ({ navigation }) => {
         ref.update({
             courses: temp
         })
-        // ref.on('value', (data) => {
-        //     console.log(data.val())
-        // })
-
+        setDisable(true)
     }
 
     const courseList = Object.entries(courses).map((course, index) => {
@@ -266,16 +265,10 @@ export const Course = ({ navigation }) => {
                     <Text style={styles.message}>{message}</Text>
                     <Text style={styles.clashed}>{clashedCourse}</Text>
                     {savable 
-                    ? <View style={styles.saveContainer}>
-                        <Button 
-                        onPress={() => { 
-                            handleSave(); 
-                        }}
-                        backgroundColor={Colors.button1}
-                        title={'Save'}
-                        titleSize={20}
-                        />
-                    </View> 
+                    ? <TouchableOpacity disabled={disable} style={styles.saveButton} activeOpacity={{disable} ? .1 : 1} onPress={() => handleSave()}>
+                        <Text style={[styles.title,{color: '#fff', fontWeight: '600', fontSize: 16, }]}>Save</Text>
+                    </TouchableOpacity>
+                    
                     : null}
                     <Text style={styles.close}>Tap to close</Text>
                 </TouchableOpacity>
@@ -349,10 +342,14 @@ const styles = StyleSheet.create({
     clashed: {
         fontSize: 25
     },
-    saveContainer: {
+    saveButton: {
         position: 'absolute', 
+        backgroundColor: '#f57c00',
         bottom: 300, 
-        width: '50%'
+        minHeight: 40,
+        width: '50%',
+        borderRadius: 10, 
+        justifyContent: 'center'
     },
     close: {
         fontSize: 15,

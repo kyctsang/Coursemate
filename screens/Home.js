@@ -45,14 +45,25 @@ export const Home = ({ navigation }) => {
     }
   };
   if (Object.keys(courses).length==0) {
-    const ref = db.ref('users/'+user.uid+'/courses')
-    ref.on('value', (data) => {
+    const ref2 = db.ref('users/'+user.uid+'/courses')
+    ref2.on('value', (data) => {
       // console.log(data.val())
-      setCourses(data.val())
+      if (data.val() == null){
+        setCourses({courses: 'empty'})
+      }else{
+        setCourses(data.val())
+      }
     })
   }
 
   const selectedCourses = Object.entries(courses).map((course, index) => {
+    if (course[1] == 'empty') {
+      return(
+        <View key={index} style={styles.courses}>
+          <Text style={styles.courseTitle}>No saved course yet!</Text>
+        </View>
+      )
+    }
     console.log(course[0] + " " + course[1])
     return(
       <View key={index} style={styles.courses}>
@@ -97,7 +108,7 @@ const styles = StyleSheet.create({
   },
   coursesContainer: {
     position: 'absolute', 
-    bottom: 100, 
+    bottom: 20, 
     width: '90%', 
     justifyContent: 'center'
   },
