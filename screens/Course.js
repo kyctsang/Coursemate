@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useBottomModal, BottomModal } from 'react-native-lightning-modal';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
 
@@ -14,7 +14,9 @@ import 'firebase/database';
 const db = firebase.database();
 
 const ScreenContainer = ({ children }) => (
-    <View style={styles.container}>{children}</View>
+    <TouchableWithoutFeedback onPress={() => {Keyboard.dismiss()}}>
+        <View style={styles.container}>{children}</View>
+    </TouchableWithoutFeedback>
 );
 
 export const Course = ({ navigation }) => {
@@ -334,7 +336,7 @@ const styles = StyleSheet.create({
     },
     scrollView: {
         display: 'flex',
-        backgroundColor: '#fff'
+        backgroundColor: '#F5F5F5'
     },
     fill: { 
         flex: 1,
