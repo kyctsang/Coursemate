@@ -17,14 +17,16 @@ const ScreenContainer = ({ children }) => (
 );
 
 export const Course = ({ navigation }) => {
+    const [courses, setCourses] = useState({})
+    const [courses2, setCourses2] = useState({})
     const [courseCode, setCourseCode] = useState()
-    const [courses, setCourses] = useState([])
-    const [courses2, setCourses2] = useState([])
     const [selected, setSelected] = useState([])
     const [message, setMessage] = useState("")
     const [clashedCourse, setClashedCourse] = useState("")
-    const { user } = useContext(AuthenticatedUserContext);
     const { dismiss, show, modalProps } = useBottomModal();
+
+
+    const { user } = useContext(AuthenticatedUserContext);
     const day = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri']
     const slot = ['', '08:30', '09:30', '10:30', '11:30', '12:30', '13:30', '14:30', '15:30', '16:30', '17:30', '18:30', '19:30']
 
@@ -38,35 +40,46 @@ export const Course = ({ navigation }) => {
         setCourses(data.val())
         setCourses2(data.val())
         // console.log(courses) 
+        // Object.entries(courses).map((course, index) => {
+        //     console.log("1: "+course[0])
+        //     // console.log(course[1].section)
+        //     Object.entries(course[1].section).map((timeslots, index2) => {
+        //         console.log(timeslots[0])
+        //         console.log(timeslots[1])
+        //         console.log("NEXT")
+        //     })
+        // })
 
     }
+
     useEffect(() => {
         var ref = db.ref('course/');
         ref.on('value', gotCourses);
 
-        ref = db.ref('users/'+user.uid);
-        ref.on('value', (data) => {
-            console.log(data.val())
-            console.log('users/'+user.uid)
-            // console.log(user.uid)
-        })
+        // ref = db.ref('users/'+user.uid);
+        // ref.on('value', (data) => {
+        //     console.log(data.val())
+        //     console.log('users/'+user.uid)
+        //     // console.log(user.uid)
+        // })
     }, []);
 
-    function searchCourse(text) {
-        var temp = []
+    function searchCourse(text){
+        var temp = {}
+        // console.log("START")
         Object.entries(courses2).map((course, index) => {
-            // console.log(course[1].code)
-            // console.log("BREAK")
-            if (course[1].code.includes(text.toUpperCase())) {
-                console.log(course[1].code)
-                temp.push(course[1])
+            // console.log("INDEX: " + index)
+            if (course[0].includes(text.toUpperCase())) {
+                // console.log(course)
+                temp[course[0]] = course[1]
             }
         })
         // console.log(temp)
         setCourses(temp)
     }
 
-    function selectCourse(code, section) {
+    function selectCourse(code, section){
+        console.log("CODE: " + code + ", SECTION: " + section)
         if (selected.length < 6) {
             var duplicate = false
             selected.forEach((course, index) => {
@@ -83,6 +96,7 @@ export const Course = ({ navigation }) => {
             } else {
                 const temp = selected
                 temp.push({ code, section })
+                console.log(section)
                 // console.log(...temp)
                 setSelected([...temp])
             }
@@ -139,21 +153,24 @@ export const Course = ({ navigation }) => {
         }
     }
 
-    const courseList = courses.map((course, index) => {
-        // console.log(course.section)
-        return (
-            Object.entries(course.section).map((section, index) => {
+    const courseList = Object.entries(courses).map((course, index) => {
+        // console.log(course[0])
+        // console.log(course[1].section)
+        return(
+            Object.entries(course[1].section).map((timeslots, index2) => {
+                // console.log(course[0] + " " + timeslots[0])
                 var timeslot = ""
                 var check_day = 0
                 var temp = [0, 0, 0, 0, 0, 0]
                 var temp2 = [0, 0, 0, 0, 0, 0]
                 var pad = ""
-                section[1].map((x) => {
-                    temp[x[0]] += 1
-                    if (check_day != x[0]) {
-                        temp2[x[0]] = parseInt(x[2])
+                timeslots[1].forEach((slot, index3) => {
+                    // console.log(slot)
+                    temp[slot[0]] += 1
+                    if (check_day != slot[0]) {
+                        temp2[slot[0]] = parseInt(slot[2])
                     }
-                    check_day = x[0]
+                    check_day = slot[0]
                 })
                 temp.forEach((element, index) => {
                     if (element != 0) {
@@ -163,9 +180,9 @@ export const Course = ({ navigation }) => {
                         pad = "   "
                     }
                 })
-                return (
-                    <TouchableOpacity style={styles.courseList} key={index} onPress={() => selectCourse(course.code, section)}>
-                        <Text style={styles.courseTitle}>{course.code} {section[0]}</Text>
+                return(
+                    <TouchableOpacity style={styles.courseList} key={index2} onPress={() => selectCourse(course[0], timeslots)}>
+                        <Text style={styles.courseTitle}>{course[0]} {timeslots[0]}</Text>
                         <Text>{timeslot}</Text>
                     </TouchableOpacity>
                 )
@@ -187,19 +204,6 @@ export const Course = ({ navigation }) => {
 
     return (
         <ScreenContainer>
-            {/* <View style={styles.inputContainer}>
-                <MaterialCommunityIcons
-                    name={'magnify'}
-                    size={20}
-                    iconColor = '#000'
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Search Course"
-                    onChangeText={text => searchCourse(text)}
-                />
-            </View> */}
-            {/* <Text>{user.uid}</Text> */}
             <InputField
                 inputStyle={{
                     fontSize: 14
