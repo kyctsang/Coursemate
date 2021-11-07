@@ -44,6 +44,7 @@ export const Home = ({ navigation }) => {
       console.log(error);
     }
   };
+  
   if (Object.keys(courses).length==0) {
     const ref2 = db.ref('users/'+user.uid+'/courses')
     ref2.on('value', (data) => {
