@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, Button, ScrollView, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 import { useBottomModal, BottomModal } from 'react-native-lightning-modal';
+import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
 
 import { Typography, Colors, Base } from '../styles';
 import { InputField, ErrorMessage } from '../components';
@@ -9,7 +10,7 @@ import * as firebase from 'firebase';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import 'firebase/database';
 
-const database = firebase.database();
+const db = firebase.database();
 
 const ScreenContainer = ({ children }) => (
     <View style={styles.container}>{children}</View>
@@ -22,12 +23,13 @@ export const Course = ({ navigation }) => {
     const [selected, setSelected] = useState([])
     const [message, setMessage] = useState("")
     const [clashedCourse, setClashedCourse] = useState("")
+    const { user } = useContext(AuthenticatedUserContext);
     const { dismiss, show, modalProps } = useBottomModal();
     const day = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri']
     const slot = ['', '08:30', '09:30', '10:30', '11:30', '12:30', '13:30', '14:30', '15:30', '16:30', '17:30', '18:30', '19:30']
 
-    function gotData(data) {
-        console.log(data.val())
+    function gotCourses(data) {
+        // console.log(data.val())
         // data.val().forEach(element => {
         //     console.log("CODE: " + element.code)
         //     console.log("TITLE: " + element.title)
@@ -39,8 +41,15 @@ export const Course = ({ navigation }) => {
 
     }
     useEffect(() => {
-        const ref = database.ref('course/');
-        ref.on('value', gotData);
+        var ref = db.ref('course/');
+        ref.on('value', gotCourses);
+
+        ref = db.ref('users/'+user.uid);
+        ref.on('value', (data) => {
+            console.log(data.val())
+            console.log('users/'+user.uid)
+            // console.log(user.uid)
+        })
     }, []);
 
     function searchCourse(text) {
@@ -53,7 +62,7 @@ export const Course = ({ navigation }) => {
                 temp.push(course[1])
             }
         })
-        console.log(temp)
+        // console.log(temp)
         setCourses(temp)
     }
 
@@ -61,8 +70,8 @@ export const Course = ({ navigation }) => {
         if (selected.length < 6) {
             var duplicate = false
             selected.forEach((course, index) => {
-                console.log(course.code)
-                console.log(code)
+                // console.log(course.code)
+                // console.log(code)
                 if (course.code == code) {
                     duplicate = true
                 }
@@ -111,9 +120,9 @@ export const Course = ({ navigation }) => {
         var found = ""
         Object.entries(slot_tuple).map((slot, index) => {
             if (slot[1].length > 1 && valid) {
-                console.log("Time clash")
+                // console.log("Time clash")
                 slot[1].forEach((course, index) => {
-                    console.log(course)
+                    // console.log(course)
                     found += course + '\n'
                 })
                 valid = false
@@ -190,6 +199,7 @@ export const Course = ({ navigation }) => {
                     onChangeText={text => searchCourse(text)}
                 />
             </View> */}
+            {/* <Text>{user.uid}</Text> */}
             <InputField
                 inputStyle={{
                     fontSize: 14
@@ -287,7 +297,9 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.background
     },
     fill: { 
-        flex: 5/6,
+        flex: 1,
+        width: '100%',
+        paddingTop: 50,
         alignItems: 'center'
     },
     message:{
@@ -302,7 +314,7 @@ const styles = StyleSheet.create({
         color: '#c2b38a',
         // fontWeight: '400',
         position: 'absolute',
-        bottom: 150
+        bottom: 200
     }
 
 });
