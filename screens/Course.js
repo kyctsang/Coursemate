@@ -41,16 +41,6 @@ export const Course = ({ navigation }) => {
         setCourses(data.val())
         setCourses2(data.val())
         // console.log(courses) 
-        // Object.entries(courses).map((course, index) => {
-        //     console.log("1: "+course[0])
-        //     // console.log(course[1].section)
-        //     Object.entries(course[1].section).map((timeslots, index2) => {
-        //         console.log(timeslots[0])
-        //         console.log(timeslots[1])
-        //         console.log("NEXT")
-        //     })
-        // })
-
     }
 
     useEffect(() => {
@@ -71,7 +61,7 @@ export const Course = ({ navigation }) => {
         Object.entries(courses2).map((course, index) => {
             // console.log(course[1].code)
             // console.log("BREAK")
-            if (course[0].code.includes(text)) {
+            if (course[0].includes(text)) {
                 // console.log(course[1].code)
                 temp[course[0]] = course[1]
             }
@@ -81,7 +71,7 @@ export const Course = ({ navigation }) => {
     }
 
     function selectCourse(code, section){
-        console.log("CODE: " + code + ", SECTION: " + section)
+        // console.log("CODE: " + code + ", SECTION: " + section)
         if (selected.length < 6) {
             var duplicate = false
             selected.forEach((course, index) => {
@@ -98,7 +88,7 @@ export const Course = ({ navigation }) => {
             } else {
                 const temp = selected
                 temp.push({ code, section })
-                console.log(section)
+                // console.log(section)
                 // console.log(...temp)
                 setSelected([...temp])
             }
