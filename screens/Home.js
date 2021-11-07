@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { View, Text, StyleSheet, Button } from "react-native";
 
 import { Typography, Colors, Base } from '../styles';
@@ -7,15 +7,20 @@ import { Typography, Colors, Base } from '../styles';
 import { IconButton } from '../components';
 import Firebase from '../config/firebase';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
+import * as firebase from 'firebase';
+import 'firebase/database';
 
 const auth = Firebase.auth();
+const db = firebase.database();
 
 const ScreenContainer = ({ children }) => (
   <View style={styles.container}>{children}</View>
 );
 
 export const Home = ({ navigation }) => {
+  const [privacy, setPrivacy] = useState('public')
   const { user } = useContext(AuthenticatedUserContext);
+
   const handleSignOut = async () => {
     try {
       await auth.signOut();
@@ -23,6 +28,19 @@ export const Home = ({ navigation }) => {
       console.log(error);
     }
   };
+
+  const ref = db.ref('users/'+user.uid)
+  ref.on('value', (data) => {
+    console.log(data.val())
+    console.log('users/'+user.uid)
+    const identifier = user.uid
+    if(data.val()==null){
+      console.log("NULL!!!")
+      ref.set({
+          public: true
+      })
+    }
+  })
 
   return (
   <ScreenContainer>
@@ -37,6 +55,7 @@ export const Home = ({ navigation }) => {
         />
       </View>
       <Text style={styles.text}>Your UID is: {user.uid} </Text>
+      <Text>User profile: {privacy}</Text>
   </ScreenContainer>
   );
 };
