@@ -164,18 +164,18 @@ export const Course = ({ navigation }) => {
                     }
                     check_day = slot[0]
                 })
-                temp.forEach((element, index) => {
+                temp.forEach((element, index3) => {
                     if (element != 0) {
-                        timeslot += pad + '(' + day[index] + ') ' + slot[temp2[index]] + '⁠–' + slot[temp2[index] + element]
+                        timeslot += pad + '(' + day[index3] + ') ' + slot[temp2[index3]] + '⁠–' + slot[temp2[index3] + element]
                     }
                     if (timeslot != "") {
                         pad = "   "
                     }
                 })
                 return (
-                    <View style={{ height: 70 }}>
+                    <View key={index2} style={{ height: 70 }}>
                         <InsetShadow>
-                            <TouchableOpacity style={styles.courseList} key={index} onPress={() => selectCourse(course[0], timeslots)}>
+                            <TouchableOpacity style={styles.courseList} onPress={() => selectCourse(course[0], timeslots)}>
                                 <Text style={styles.courseTitle}>{course[0]} {timeslots[0]}</Text>
                                 <Text>{timeslot}</Text>
                             </TouchableOpacity>
@@ -189,7 +189,7 @@ export const Course = ({ navigation }) => {
     const selectedCourses = selected.map((course, index) => {
         return (
             <TouchableOpacity style={styles.selectedItem} key={index} onPress={() => deselectCourse(index)}>
-                <Text key={index}>{course.code} {course.section[0]}</Text>
+                <Text>{course.code} {course.section[0]}</Text>
                 <MaterialCommunityIcons
                     name={'window-close'}
                     size={16}
