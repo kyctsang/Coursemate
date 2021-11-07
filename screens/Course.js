@@ -20,7 +20,7 @@ export const Course = ({ navigation }) => {
     const [courses, setCourses] = useState([])
     const [courses2, setCourses2] = useState([])
     const [selected, setSelected] = useState([])
-    const [checkResult, setCheckResult] = useState("")
+    const [message, setMessage] = useState("")
     const [clashedCourse, setClashedCourse] = useState("")
     const { dismiss, show, modalProps } = useBottomModal();
     const day = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri']
@@ -68,7 +68,9 @@ export const Course = ({ navigation }) => {
                 }
             })
             if (duplicate) {
-                alert(code + " is selected previously!")
+                setMessage(code + " is selected already! 🤨")
+                setClashedCourse("")
+                show()
             } else {
                 const temp = selected
                 temp.push({ code, section })
@@ -77,7 +79,9 @@ export const Course = ({ navigation }) => {
             }
 
         } else {
-            alert("You can select up to 6 courses only!")
+            setMessage("You can select up to 6 courses only! 🤥")
+            setClashedCourse("")
+            show()
         }
     }
 
@@ -117,11 +121,11 @@ export const Course = ({ navigation }) => {
         })
         if (valid) {
             // alert("No time clash!")
-            setCheckResult("No time clash! 🤩")
+            setMessage("No time clash! 🤩")
             setClashedCourse("")
         } else {
             // alert("Time clash!\n" + found)
-            setCheckResult("Time clash! 😮‍💨\n\n")
+            setMessage("Time clash! 😮‍💨\n\n")
             setClashedCourse(found)
         }
     }
@@ -162,7 +166,7 @@ export const Course = ({ navigation }) => {
 
     const selectedCourses = selected.map((course, index) => {
         return (
-            <TouchableOpacity style={styles.selectedContainer} key={index} onPress={() => deselectCourse(index)}>
+            <TouchableOpacity style={styles.selectedItem} key={index} onPress={() => deselectCourse(index)}>
                 <Text key={index}>{course.code} {course.section[0]}</Text>
                 <MaterialCommunityIcons 
                     name={'window-close'}
@@ -208,9 +212,11 @@ export const Course = ({ navigation }) => {
             <ScrollView style={styles.scrollView}>
                 {courseList}
             </ScrollView>
-            <View style={styles.selectContainer}>
+            <View style={styles.selectedContainer}>
                 <Text>Selected</Text>
-                {selectedCourses}
+                <View style={styles.selectedList}>
+                    {selectedCourses}
+                </View>
             </View>
             <Button
                 title='Check'
@@ -218,7 +224,7 @@ export const Course = ({ navigation }) => {
             />
             <BottomModal backdropColor="rgba(0,0,0,0.5)" height={600} {...modalProps} >
                 <TouchableOpacity style={styles.fill} onPress={dismiss}>
-                    <Text style={styles.result}>{checkResult}</Text>
+                    <Text style={styles.message}>{message}</Text>
                     <Text style={styles.clashed}>{clashedCourse}</Text>
                     <Text style={styles.close}>Tap to close</Text>
                 </TouchableOpacity>
@@ -242,12 +248,25 @@ const styles = StyleSheet.create({
     //     width: '100%',
     //     fontSize: 18
     // },
-    selectContainer: {
-        padding: 12,
-        height: 200
-    },
     selectedContainer: {
+        padding: 12,
+        height: 200,
+    },
+    selectedList: {
+        padding: 12,
+        height: 70,
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        alignItems: 'center'
+
+    },
+    selectedItem: {
+        width:'40%',
+        borderWidth: 1.5,
         borderRadius: 4,
+        marginHorizontal: 17,
+        marginVertical: 5,
+        height: 45,
         flexDirection: 'row',
         padding: 12
     },
@@ -271,8 +290,9 @@ const styles = StyleSheet.create({
         flex: 5/6,
         alignItems: 'center'
     },
-    result:{
-        fontSize: 35
+    message:{
+        fontSize: 35,
+        textAlign: 'center'
     },
     clashed:{
         fontSize: 25
