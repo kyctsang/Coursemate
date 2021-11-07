@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, Button, ScrollView, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 import { useBottomModal, BottomModal } from 'react-native-lightning-modal';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
 
 import { Typography, Colors, Base } from '../styles';
-import { InputField, ErrorMessage } from '../components';
+import { InputField, ErrorMessage, Button } from '../components';
+import InsetShadow from 'react-native-inset-shadow'
 
 import * as firebase from 'firebase';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -68,9 +69,10 @@ export const Course = ({ navigation }) => {
         var temp = {}
         // console.log("START")
         Object.entries(courses2).map((course, index) => {
-            // console.log("INDEX: " + index)
-            if (course[0].includes(text.toUpperCase())) {
-                // console.log(course)
+            // console.log(course[1].code)
+            // console.log("BREAK")
+            if (course[0].code.includes(text)) {
+                // console.log(course[1].code)
                 temp[course[0]] = course[1]
             }
         })
@@ -180,11 +182,15 @@ export const Course = ({ navigation }) => {
                         pad = "   "
                     }
                 })
-                return(
-                    <TouchableOpacity style={styles.courseList} key={index2} onPress={() => selectCourse(course[0], timeslots)}>
-                        <Text style={styles.courseTitle}>{course[0]} {timeslots[0]}</Text>
-                        <Text>{timeslot}</Text>
-                    </TouchableOpacity>
+                return (
+                    <View style={{ height: 70 }}>
+                        <InsetShadow>
+                            <TouchableOpacity style={styles.courseList} key={index} onPress={() => selectCourse(course[0], timeslots)}>
+                                <Text style={styles.courseTitle}>{course[0]} {timeslots[0]}</Text>
+                                <Text>{timeslot}</Text>
+                            </TouchableOpacity>
+                        </InsetShadow>
+                    </View>
                 )
             })
         )
@@ -194,7 +200,7 @@ export const Course = ({ navigation }) => {
         return (
             <TouchableOpacity style={styles.selectedItem} key={index} onPress={() => deselectCourse(index)}>
                 <Text key={index}>{course.code} {course.section[0]}</Text>
-                <MaterialCommunityIcons 
+                <MaterialCommunityIcons
                     name={'window-close'}
                     size={16}
                 />
@@ -204,38 +210,63 @@ export const Course = ({ navigation }) => {
 
     return (
         <ScreenContainer>
-            <InputField
-                inputStyle={{
-                    fontSize: 14
-                }}
-                containerStyle={{
-                    backgroundColor: '#fff',
-                    marginBottom: 20
-                }}
-                leftIcon='card-search-outline'
-                placeholder='Enter Course Code'
-                autoCapitalize='none'
-                autoCorrect={false}
-                textContentType='password'
-                value={courseCode}
-                onChangeText={text => {
-                    setCourseCode(text);
-                    searchCourse(text);
-                }}
-            />
+            {/* <View style={styles.inputContainer}>
+                <MaterialCommunityIcons
+                    name={'magnify'}
+                    size={20}
+                    iconColor = '#000'
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Search Course"
+                    onChangeText={text => searchCourse(text)}
+                />
+            </View> */}
+            <View style={styles.searchBar}>
+                <InputField
+                    inputStyle={{
+                        fontSize: 14
+                    }}
+                    containerStyle={{
+                        backgroundColor: '#E8E8E8',
+                        marginBottom: 16
+                    }}
+                    leftIcon='card-search-outline'
+                    placeholder='Enter Course Code'
+                    autoCapitalize='characters'
+                    autoCorrect={false}
+                    textContentType='password'
+                    value={courseCode}
+                    onChangeText={text => {
+                        setCourseCode(text.toUpperCase());
+                        searchCourse(text.toUpperCase());
+                    }}
+                />
+            </View>
             <ScrollView style={styles.scrollView}>
                 {courseList}
             </ScrollView>
             <View style={styles.selectedContainer}>
-                <Text>Selected</Text>
+                <Text style={styles.title}>Selected Courses</Text>
                 <View style={styles.selectedList}>
                     {selectedCourses}
                 </View>
             </View>
-            <Button
+            <View style={{ paddingHorizontal: 12 }}>
+                <Button
+                onPress={() => { 
+                    check(); 
+                    show();
+                }}
+                backgroundColor={Colors.button1}
                 title='Check'
-                onPress={() => {check(); show()}}
-            />
+                tileColor='#fff'
+                titleSize={20}
+                containerStyle={{
+                    marginBottom: 12
+                }}
+                />
+            </View>
             <BottomModal backdropColor="rgba(0,0,0,0.5)" height={600} {...modalProps} >
                 <TouchableOpacity style={styles.fill} onPress={dismiss}>
                     <Text style={styles.message}>{message}</Text>
@@ -243,7 +274,7 @@ export const Course = ({ navigation }) => {
                     <Text style={styles.close}>Tap to close</Text>
                 </TouchableOpacity>
             </BottomModal>
-        </ScreenContainer>
+        </ScreenContainer >
     )
 
 }
@@ -262,9 +293,18 @@ const styles = StyleSheet.create({
     //     width: '100%',
     //     fontSize: 18
     // },
+    searchBar: {
+        paddingHorizontal: 12
+    },
+    title: {
+        fontWeight: 'bold',
+        fontSize: 16,
+        alignSelf: 'center'
+    },
     selectedContainer: {
         padding: 12,
-        height: 200,
+        // backgroundColor: '#000',
+        height: 200
     },
     selectedList: {
         padding: 12,
@@ -275,30 +315,32 @@ const styles = StyleSheet.create({
 
     },
     selectedItem: {
-        width:'40%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '40%',
         borderWidth: 1.5,
         borderRadius: 4,
         marginHorizontal: 17,
         marginVertical: 5,
-        height: 45,
-        flexDirection: 'row',
-        padding: 12
+        height: 40,
+        flexDirection: 'row'
     },
     courseList: {
-        alignItems: "center",
-        backgroundColor: Colors.courseList,
-        borderWidth: 1.5,
-        borderBottomWidth: 0,
-        padding: 10,
-        borderRadius: 10
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 15
     },
     courseTitle: {
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        fontSize: 16
     },
     scrollView: {
-        height: 300,
-        borderRadius: 10,
-        backgroundColor: Colors.background
+        display: 'flex',
+        height: 100, // ?
+        // borderWidth: 2,
+        backgroundColor: '#fff'
     },
     fill: { 
         flex: 1,
@@ -306,14 +348,14 @@ const styles = StyleSheet.create({
         paddingTop: 50,
         alignItems: 'center'
     },
-    message:{
+    message: {
         fontSize: 35,
         textAlign: 'center'
     },
-    clashed:{
+    clashed: {
         fontSize: 25
     },
-    close:{
+    close: {
         fontSize: 15,
         color: '#c2b38a',
         // fontWeight: '400',
