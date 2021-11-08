@@ -12,7 +12,7 @@ import Firebase from '../config/firebase';
 const auth = Firebase.auth();
 
 export default function LoginScreen({ navigation }) {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisibility, setPasswordVisibility] = useState(true);
   const [rightIcon, setRightIcon] = useState('eye');
@@ -30,8 +30,8 @@ export default function LoginScreen({ navigation }) {
 
   const onLogin = async () => {
     try {
-      if (email !== '' && password !== '') {
-        await auth.signInWithEmailAndPassword(email, password);
+      if (username !== '' && password !== '') {
+        await auth.signInWithEmailAndPassword(username + '@gmail.com', password);
       }
     } catch (error) {
       setLoginError(error.message);
@@ -51,14 +51,12 @@ export default function LoginScreen({ navigation }) {
           backgroundColor: '#fff',
           marginBottom: 20
         }}
-        leftIcon='email'
-        placeholder='Enter email'
+        leftIcon='account'
+        placeholder='Enter username'
         autoCapitalize='none'
-        keyboardType='email-address'
-        textContentType='emailAddress'
         autoFocus={true}
-        value={email}
-        onChangeText={text => setEmail(text)}
+        value={username}
+        onChangeText={text => setUsername(text)}
       />
       <InputField
         inputStyle={{
