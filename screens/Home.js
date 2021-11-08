@@ -24,15 +24,13 @@ export const Home = ({ navigation }) => {
   const { user } = useContext(AuthenticatedUserContext);
 
   useEffect(() => {
-    const ref = db.ref('users/'+user.uid)
-    console.log(user.uid)
-    console.log(user.email.substring(0,user.email.length-7))
+    const username = user.email.substring(0,user.email.length-10)
+    const ref = db.ref('users/' + username)
     ref.on('value', (data) => {
-      console.log(data)
-      console.log('users/'+user.uid)
       if(data.val()==null){
         console.log("NULL!!!")
         ref.set({
+            UID: user.uid,
             public: true
         })
       }
@@ -80,7 +78,7 @@ export const Home = ({ navigation }) => {
   <ScreenContainer>
     <StatusBar style='dark-content' />
       <View style={styles.row}>
-        <Text style={styles.title}>Welcome {user.email}!</Text>
+        <Text style={styles.title}>Welcome {user.email.substring(0,user.email.length-10)}!</Text>
         <IconButton
           name='logout'
           size={24}

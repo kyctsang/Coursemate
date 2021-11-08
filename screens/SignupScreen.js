@@ -1,21 +1,26 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { useState } from 'react';
-import { StyleSheet, Text, View, Button as RNButton } from 'react-native';
+import { StyleSheet, Text, View, Button as RNButton, TouchableOpacity } from 'react-native';
 
 import { Typography, Colors, Base } from '../styles'
 
-import { Button, InputField, ErrorMessage } from '../components';
+import { Button, InputField, ErrorMessage, ValidMessage } from '../components';
 import Firebase from '../config/firebase';
+import * as firebase from 'firebase';
+import 'firebase/database';
 
 const auth = Firebase.auth();
+const db = firebase.database();
 
 export default function SignupScreen({ navigation }) {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisibility, setPasswordVisibility] = useState(true);
   const [rightIcon, setRightIcon] = useState('eye');
-  const [signupError, setSignupError] = useState('');
+  const [usernameError, setUsernameError] = useState(true);
+  const [passwordError, setPasswordError] = useState(true)
+  const [message, setMessage] = useState('')
 
   const handlePasswordVisibility = () => {
     if (rightIcon === 'eye') {
@@ -29,14 +34,42 @@ export default function SignupScreen({ navigation }) {
 
   const onHandleSignup = async () => {
     try {
-      if (email !== '' && password !== '') {
-        await auth.createUserWithEmailAndPassword(email, password);
-      }
+      await auth.createUserWithEmailAndPassword(username+'@gmail.com', password);  
     } catch (error) {
-      setSignupError(error.message);
+      // setSignupError(true);
+      // setMessage(error.message)
     }
   };
 
+  function checkUsername(text){
+    var letterNumber = /^[0-9a-zA-Z]+$/;
+    if(text.match(letterNumber)){
+      const ref = db.ref('users/'+text)
+      ref.on('value', (data) => {
+        if(data.val()!=null){
+          // console.log("username is taken!")
+          setUsernameError(true)
+          setMessage("Username is taken!")
+        }else{
+          setUsernameError(false)
+          setMessage("Valid username!")
+        }
+      })
+    }else{
+      setUsernameError(true)
+      setMessage("No special character for username!")
+    }
+    setUsername(text)
+  }
+
+  function checkPassword(text){
+    if(text.length<6){
+      setPasswordError(true)
+    }else{
+      setPasswordError(false)
+    }
+    setPassword(text)
+  }
   return (
     <View style={styles.container}>
       <StatusBar style='dark-content' />
@@ -50,14 +83,12 @@ export default function SignupScreen({ navigation }) {
           backgroundColor: '#fff',
           marginBottom: 20
         }}
-        leftIcon='email'
-        placeholder='Enter email'
+        leftIcon='account'
+        placeholder='Enter username'
         autoCapitalize='none'
-        keyboardType='email-address'
-        textContentType='emailAddress'
         autoFocus={true}
-        value={email}
-        onChangeText={text => setEmail(text)}
+        value={username}
+        onChangeText={text => checkUsername(text)}
       />
       <InputField
         inputStyle={{
@@ -68,27 +99,20 @@ export default function SignupScreen({ navigation }) {
           marginBottom: 20
         }}
         leftIcon='lock'
-        placeholder='Enter password'
+        placeholder='Enter password (min 6 characters)'
         autoCapitalize='none'
         autoCorrect={false}
         secureTextEntry={passwordVisibility}
         textContentType='password'
         rightIcon={rightIcon}
         value={password}
-        onChangeText={text => setPassword(text)}
+        onChangeText={text => checkPassword(text)}
         handlePasswordVisibility={handlePasswordVisibility}
       />
-      {signupError ? <ErrorMessage error={signupError} visible={true} /> : null}
-      <Button
-        onPress={onHandleSignup}
-        backgroundColor='#f57c00'
-        title='Signup'
-        tileColor='#fff'
-        titleSize={20}
-        containerStyle={{
-          marginBottom: 12
-        }}
-      />
+      {usernameError ? <ErrorMessage error={message} visible={true} /> : <ValidMessage valid={message} visible={true}/>}
+      <TouchableOpacity disabled={ !usernameError && !passwordError ? false : true } style={[styles.signUpButton, {backgroundColor: !usernameError && !passwordError ? '#f57c00' : '#e6a86a'}]} onPress={onHandleSignup}>
+        <Text style={{color:'#fff', fontSize: 20, fontWeight: '600'}}>Signup</Text>
+      </TouchableOpacity>
       <Button
         onPress={() => navigation.navigate('Login')}
         backgroundColor={Colors.button2}
@@ -112,5 +136,14 @@ const styles = StyleSheet.create({
   },
   appName: {
     ...Typography.appName
+  },
+  signUpButton: {
+    backgroundColor:'#f57c00', 
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 40,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    marginBottom: 12
   }
 });
