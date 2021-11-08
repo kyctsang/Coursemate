@@ -267,8 +267,8 @@ export const Course = ({ navigation }) => {
                     <Text style={styles.message}>{message}</Text>
                     <Text style={styles.clashed}>{clashedCourse}</Text>
                     {savable 
-                    ? <TouchableOpacity disabled={disable} style={styles.saveButton} activeOpacity={{disable} ? .1 : 1} onPress={() => handleSave()}>
-                        <Text style={[styles.title,{color: '#fff', fontWeight: '600', fontSize: 16, }]}>Save</Text>
+                    ? <TouchableOpacity disabled={disable} style={[styles.saveButton, {backgroundColor: disable ? '#bd7b7b': '#ff0000'}]} onPress={() => handleSave()}>
+                        <Text style={[styles.title,{color: '#fff', fontWeight: '600', fontSize: 16, }]}>{disable ? 'Saved': 'Save'}</Text>
                     </TouchableOpacity>
                     
                     : null}

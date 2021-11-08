@@ -25,8 +25,10 @@ export const Home = ({ navigation }) => {
 
   useEffect(() => {
     const ref = db.ref('users/'+user.uid)
+    console.log(user.uid)
+    console.log(user.email.substring(0,user.email.length-7))
     ref.on('value', (data) => {
-      console.log(data.val())
+      console.log(data)
       console.log('users/'+user.uid)
       if(data.val()==null){
         console.log("NULL!!!")
@@ -88,7 +90,9 @@ export const Home = ({ navigation }) => {
       </View>
       <Text style={styles.text}>Your UID is: {user.uid} </Text>
       <Text>User profile: {privacy}</Text>
+      <View style={{height:170}}></View>
       <View style={styles.coursesContainer}>
+        <Text style={{textAlign: 'center', fontWeight: 'bold', fontSize: 20, marginBottom: 10}}>2021-2022 S1</Text>
         {selectedCourses}
       </View>
   </ScreenContainer>
@@ -108,16 +112,15 @@ const styles = StyleSheet.create({
     marginBottom: 24
   },
   coursesContainer: {
-    position: 'absolute', 
-    bottom: 20, 
-    width: '90%', 
-    justifyContent: 'center'
+    justifyContent: 'center', 
+    alignItems: 'center',
   },
   courses: {
     height: 50, 
-    borderWidth:3, 
-    borderRadius:5, 
-    margin:3, 
+    borderWidth: 3, 
+    borderRadius: 5, 
+    margin: 3, 
+    width:'80%',
     justifyContent: 'center',
     backgroundColor: '#fcba03'
   },
