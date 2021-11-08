@@ -148,7 +148,7 @@ export const Course = ({ navigation }) => {
     }
 
     function handleSave(){
-        alert("SAVED")
+        // alert("SAVED")
         const ref = db.ref('users/'+user.uid)
         // console.log(selected)
         var temp = {}
