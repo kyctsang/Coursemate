@@ -22,11 +22,12 @@ export const Home = ({ navigation }) => {
   const [privacy, setPrivacy] = useState('public')
   const [courses, setCourses] = useState({})
   const { user } = useContext(AuthenticatedUserContext);
+  const username = user.email.substring(0,user.email.length-10)
 
   useEffect(() => {
-    const username = user.email.substring(0,user.email.length-10)
+    // const username = user.email.substring(0,user.email.length-10)
     const ref = db.ref('users/' + username)
-    ref.off()
+    // ref.off()
     ref.on('value', (data) => {
       // console.log('current data:')
       // console.log(data)
@@ -50,7 +51,7 @@ export const Home = ({ navigation }) => {
   };
   
   if (Object.keys(courses).length==0) {
-    const ref2 = db.ref('users/'+user.uid+'/courses')
+    const ref2 = db.ref('users/'+username+'/courses')
     ref2.on('value', (data) => {
       // console.log(data.val())
       if (data.val() == null){
