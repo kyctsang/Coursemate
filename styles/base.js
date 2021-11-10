@@ -13,6 +13,5 @@ export const auth = {
 
 export const page = {
     ...base,
-    paddingTop: 16,
     backgroundColor: '#fff'
 };
