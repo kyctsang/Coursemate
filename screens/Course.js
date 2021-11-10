@@ -36,7 +36,7 @@ export const Course = ({ navigation }) => {
 
 
     useEffect(() => {
-        const ref = db.ref('courses/');
+        const ref = db.ref('courses/sem1/');
         ref.on('value', gotCourses);
     }, []);
 
