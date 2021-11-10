@@ -6,6 +6,7 @@ import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvide
 import { Typography, Colors, Base } from '../styles';
 import { InputField, ErrorMessage, Button } from '../components';
 import InsetShadow from 'react-native-inset-shadow'
+import ToggleSwitch from 'rn-toggle-switch'
 
 import * as firebase from 'firebase';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -218,26 +219,41 @@ export const Course = ({ navigation }) => {
 
     return (
         <ScreenContainer>
-            <View style={styles.searchBar}>
-                <InputField
-                    inputStyle={{
-                        fontSize: 14
-                    }}
-                    containerStyle={{
-                        backgroundColor: '#E8E8E8',
-                        marginBottom: 16
-                    }}
-                    leftIcon='card-search-outline'
-                    placeholder='Enter Course Code'
-                    autoCapitalize='characters'
-                    autoCorrect={false}
-                    textContentType='password'
-                    value={courseCode}
-                    onChangeText={text => {
-                        setCourseCode(text.toUpperCase());
-                        handleSearch(text.toUpperCase());
-                    }}
-                />
+            <View style={styles.topContainer}>
+                <View style={styles.searchBar}>
+                    <InputField
+                        inputStyle={{
+                            fontSize: 14
+                        }}
+                        containerStyle={{
+                            backgroundColor: '#E8E8E8'
+                        }}
+                        leftIcon='card-search-outline'
+                        placeholder='Enter Course Code'
+                        autoCapitalize='characters'
+                        autoCorrect={false}
+                        textContentType='password'
+                        value={courseCode}
+                        onChangeText={text => {
+                            setCourseCode(text.toUpperCase());
+                            handleSearch(text.toUpperCase());
+                        }}
+                    />
+                </View>
+                <View style={styles.toggleSwitch}>
+                    <ToggleSwitch
+                        text={{ on: 'Sem 1', off: 'Sem 2', activeTextColor: 'white', inactiveTextColor: 'white' }}
+                        textStyle={{ fontWeight: 'bold' }}
+                        color={{ indicator: Colors.button1, active: 'black', inactive: 'black', activeBorder: 'black', inactiveBorder: 'black' }}
+                        active={true}
+                        disabled={false}
+                        width={80}
+                        radius={25}
+                        onValueChange={(val) => {
+                            /* your handler function... */
+                        }}
+                    />
+                </View>
             </View>
             <ScrollView style={styles.scrollView}>
                 {courseList}
@@ -258,9 +274,6 @@ export const Course = ({ navigation }) => {
                     title='Check'
                     tileColor='#fff'
                     titleSize={20}
-                    containerStyle={{
-                        marginBottom: 12
-                    }}
                 />
             </View>
             <BottomModal backdropColor="rgba(0,0,0,0.5)" height={600} {...modalProps} >
@@ -285,9 +298,20 @@ const styles = StyleSheet.create({
     container: {
         ...Base.page
     },
+    topContainer: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+        padding: 12,
+        height: '12%'
+    },
     searchBar: {
-        paddingHorizontal: 12,
-        height: '10%'
+        flexBasis: '70%'
+    },
+    toggleSwitch: {
+        flexBasis: '30%',
+        transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }]
     },
     title: {
         fontWeight: 'bold',
@@ -332,9 +356,12 @@ const styles = StyleSheet.create({
     scrollView: {
         display: 'flex',
         backgroundColor: '#F5F5F5',
-        height: '40%'
+        height: '38%'
     },
     checkButton: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         paddingHorizontal: 12,
         height: '10%'
     },
