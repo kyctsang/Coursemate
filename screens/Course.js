@@ -281,7 +281,8 @@ export const Course = ({ navigation }) => {
                         width={80}
                         radius={25}
                         onValueChange={(val) => {
-                            setToggleValue(!toggleValue)
+                            setToggleValue(!toggleValue);
+                            changeSem()
                         }}
                     />
                 </View>
