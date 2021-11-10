@@ -26,13 +26,17 @@ export const Home = ({ navigation }) => {
   useEffect(() => {
     const username = user.email.substring(0,user.email.length-10)
     const ref = db.ref('users/' + username)
+    ref.off()
     ref.on('value', (data) => {
+      // console.log('current data:')
+      // console.log(data)
       if(data.val()==null){
         console.log("NULL!!!")
         ref.set({
             UID: user.uid,
             public: true
         })
+        console.log("inserted")
       }
     })
   }, []);

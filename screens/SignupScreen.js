@@ -36,8 +36,8 @@ export default function SignupScreen({ navigation }) {
     try {
       await auth.createUserWithEmailAndPassword(username+'@gmail.com', password);  
     } catch (error) {
-      // setSignupError(true);
-      // setMessage(error.message)
+      setSignupError(true);
+      setMessage(error.message)
     }
   };
 
