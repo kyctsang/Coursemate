@@ -36,7 +36,7 @@ export const Course = ({ navigation }) => {
 
 
     useEffect(() => {
-        const ref = db.ref('courses/');
+        const ref = db.ref('courses/sem1/');
         ref.on('value', gotCourses);
     }, []);
 
@@ -149,7 +149,8 @@ export const Course = ({ navigation }) => {
 
     function handleSave(){
         // alert("SAVED")
-        const ref = db.ref('users/'+user.uid)
+        const username = user.email.substring(0,user.email.length-10)
+        const ref = db.ref('users/'+ username)
         // console.log(selected)
         var temp = {}
         selected.forEach((course, index) => {
