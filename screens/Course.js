@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useBottomModal, BottomModal } from 'react-native-lightning-modal';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
+import Toggle from 'react-native-toggle-element';
 
 import { Typography, Colors, Base } from '../styles';
 import { InputField, ErrorMessage, Button } from '../components';
@@ -21,14 +22,18 @@ const ScreenContainer = ({ children }) => (
 
 export const Course = ({ navigation }) => {
     const [courses, setCourses] = useState({})
-    const [courses2, setCourses2] = useState({})
+    const [coursesSem2, setCoursesSem2] = useState({})
+    const [coursesSem1, setCoursesSem1] = useState({})
     const [courseCode, setCourseCode] = useState()
-    const [selected, setSelected] = useState([])
+    const [selectedSem1, setSelectedSem1] = useState([])
+    const [selectedSem2, setSelectedSem2] = useState([])
     const [message, setMessage] = useState("")
     const [clashedCourse, setClashedCourse] = useState("")
     const [savable, setSavable] = useState(false)
     const [disable, setDisable] = useState(false)
     const { dismiss, show, modalProps } = useBottomModal();
+    const [toggleValue, setToggleValue] = useState(false);
+
 
     const { user } = useContext(AuthenticatedUserContext);
     const day = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri']
@@ -36,26 +41,33 @@ export const Course = ({ navigation }) => {
 
 
     useEffect(() => {
-        const ref = db.ref('courses/sem1/');
-        ref.on('value', gotCourses);
+        var ref = db.ref('courses/sem1/');
+        ref.on('value', (data) => {gotCourses(data, 1)});
+        ref = db.ref('courses/sem2/');
+        ref.on('value', (data) => {gotCourses(data, 2)});
     }, []);
 
-    function gotCourses(data) {
+    function gotCourses(data, sem) {
         // console.log(data.val())
         // data.val().forEach(element => {
         //     console.log("CODE: " + element.code)
         //     console.log("TITLE: " + element.title)
         // });
         console.log("Fetched")
-        setCourses(data.val())
-        setCourses2(data.val())
+        if (sem==1){
+            setCourses(data.val())
+            setCoursesSem1(data.val())
+        }else{
+            setCoursesSem2(data.val())
+        }
         // console.log(courses) 
     }
 
     function handleSearch(text){
+        const coursesSem = toggleValue ? coursesSem2 : coursesSem1
         var temp = {}
         // console.log("START")
-        Object.entries(courses2).map((course, index) => {
+        Object.entries(coursesSem).map((course, index) => {
             // console.log(course[1].code)
             // console.log("BREAK")
             if (course[0].includes(text)) {
@@ -69,6 +81,7 @@ export const Course = ({ navigation }) => {
 
     function handleSelect(code, section){
         // console.log("CODE: " + code + ", SECTION: " + section)
+        const selected = toggleValue ? selectedSem2 : selectedSem1
         if (selected.length < 6) {
             var duplicate = false
             selected.forEach((course, index) => {
@@ -88,7 +101,8 @@ export const Course = ({ navigation }) => {
                 temp.push({ code, section })
                 // console.log(section)
                 // console.log(...temp)
-                setSelected([...temp])
+                toggleValue ? setSelectedSem2([...temp]) : setSelectedSem1([...temp])
+                // setSelected([...temp])
             }
 
         } else {
@@ -100,16 +114,18 @@ export const Course = ({ navigation }) => {
     }
 
     function handleDeselect(index) {
-        const temp = selected
+        const temp = toggleValue ? selectedSem2 : selectedSem1
         temp.splice(index, 1)
         // console.log(...temp)
-        setSelected([...temp])
+        toggleValue ? setSelectedSem2([...temp]) : setSelectedSem1([...temp])
+        // setSelected([...temp])
         // console.log(selected)
         // alert(index)
     }
 
     function handleCheck() {
         var slot_tuple = {};
+        const selected = toggleValue ? selectedSem2 : selectedSem1
         selected.forEach((course, index) => {
             course.section[1].forEach((slot, index2) => {
                 if (typeof (slot_tuple[slot]) == 'undefined') {
@@ -150,17 +166,33 @@ export const Course = ({ navigation }) => {
     function handleSave(){
         // alert("SAVED")
         const username = user.email.substring(0,user.email.length-10)
-        const ref = db.ref('users/'+ username)
+        const ref = db.ref('users/' + username )
         // console.log(selected)
         var temp = {}
+        const selected = toggleValue ? selectedSem2 : selectedSem1
         selected.forEach((course, index) => {
             temp[course.code] = course.section[0]
         })
         // console.log(temp)
-        ref.update({
-            courses: temp
-        })
+        if(toggleValue){
+            ref.update({
+                sem2: temp
+            })
+        }else{
+            ref.update({
+                sem1: temp
+            })
+        }
+        
         setDisable(true)
+    }
+
+    function changeSem(){
+        if(toggleValue){
+            setCourses(coursesSem1)
+        }else{
+            setCourses(coursesSem2)
+        }
     }
 
     const courseList = Object.entries(courses).map((course, index) => {
@@ -204,7 +236,7 @@ export const Course = ({ navigation }) => {
         )
     })
 
-    const selectedCourses = selected.map((course, index) => {
+    const selectedCourses = (toggleValue ? selectedSem2 : selectedSem1).map((course, index) => {
         return (
             <TouchableOpacity style={styles.selectedItem} key={index} onPress={() => handleDeselect(index)}>
                 <Text>{course.code} {course.section[0]}</Text>
@@ -218,24 +250,44 @@ export const Course = ({ navigation }) => {
 
     return (
         <ScreenContainer>
-            <View style={styles.searchBar}>
-                <InputField
-                    inputStyle={{
-                        fontSize: 14
-                    }}
-                    containerStyle={{
-                        backgroundColor: '#E8E8E8',
-                        marginBottom: 16
-                    }}
-                    leftIcon='card-search-outline'
-                    placeholder='Enter Course Code'
-                    autoCapitalize='characters'
-                    autoCorrect={false}
-                    textContentType='password'
-                    value={courseCode}
-                    onChangeText={text => {
-                        setCourseCode(text.toUpperCase());
-                        handleSearch(text.toUpperCase());
+            <View style={{flexWrap: 'wrap',flexDirection:'row'}}>
+                <View style={styles.searchBar}>
+                    <InputField
+                        inputStyle={{
+                            fontSize: 14
+                        }}
+                        containerStyle={{
+                            backgroundColor: '#E8E8E8',
+                            marginBottom: 16
+                        }}
+                        leftIcon='card-search-outline'
+                        placeholder='Enter Course Code'
+                        autoCapitalize='characters'
+                        autoCorrect={false}
+                        textContentType='password'
+                        value={courseCode}
+                        onChangeText={text => {
+                            setCourseCode(text.toUpperCase());
+                            handleSearch(text.toUpperCase());
+                        }}
+                    /> 
+                </View>
+                <Toggle
+                    value={toggleValue}
+                    onPress={(newState) => {setToggleValue(newState); changeSem()}}
+                    leftTitle="Sem1"
+                    rightTitle="Sem2"
+                    trackBar={{
+                        activeBackgroundColor: '#f57c00',
+                        inActiveBackgroundColor: '#f57c00',
+                        width: 85,
+                        height: 35,
+                        radius: 15,
+                        }}
+                    thumbButton={{
+                        width: 41,
+                        height: 41,
+                        radius: 20
                     }}
                 />
             </View>
@@ -286,7 +338,8 @@ const styles = StyleSheet.create({
         ...Base.page
     },
     searchBar: {
-        paddingHorizontal: 12
+        paddingHorizontal: 12,
+        width: '70%'
     },
     title: {
         fontWeight: 'bold',
