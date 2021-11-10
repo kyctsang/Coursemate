@@ -14,7 +14,7 @@ import 'firebase/database';
 const db = firebase.database();
 
 const ScreenContainer = ({ children }) => (
-    <TouchableWithoutFeedback onPress={() => {Keyboard.dismiss()}}>
+    <TouchableWithoutFeedback onPress={() => { Keyboard.dismiss() }}>
         <View style={styles.container}>{children}</View>
     </TouchableWithoutFeedback>
 );
@@ -52,7 +52,7 @@ export const Course = ({ navigation }) => {
         // console.log(courses) 
     }
 
-    function handleSearch(text){
+    function handleSearch(text) {
         var temp = {}
         // console.log("START")
         Object.entries(courses2).map((course, index) => {
@@ -67,7 +67,7 @@ export const Course = ({ navigation }) => {
         setCourses(temp)
     }
 
-    function handleSelect(code, section){
+    function handleSelect(code, section) {
         // console.log("CODE: " + code + ", SECTION: " + section)
         if (selected.length < 6) {
             var duplicate = false
@@ -147,10 +147,10 @@ export const Course = ({ navigation }) => {
         setDisable(false)
     }
 
-    function handleSave(){
+    function handleSave() {
         // alert("SAVED")
-        const username = user.email.substring(0,user.email.length-10)
-        const ref = db.ref('users/'+ username)
+        const username = user.email.substring(0, user.email.length - 10)
+        const ref = db.ref('users/' + username)
         // console.log(selected)
         var temp = {}
         selected.forEach((course, index) => {
@@ -166,7 +166,7 @@ export const Course = ({ navigation }) => {
     const courseList = Object.entries(courses).map((course, index) => {
         // console.log(course[0])
         // console.log(course[1].section)
-        return(
+        return (
             Object.entries(course[1].section).map((timeslots, index2) => {
                 // console.log(course[0] + " " + timeslots[0])
                 var timeslot = ""
@@ -248,31 +248,31 @@ export const Course = ({ navigation }) => {
                     {selectedCourses}
                 </View>
             </View>
-            <View style={{ paddingHorizontal: 12 }}>
+            <View style={styles.checkButton}>
                 <Button
-                onPress={() => { 
-                    handleCheck(); 
-                    show();
-                }}
-                backgroundColor={Colors.button1}
-                title='Check'
-                tileColor='#fff'
-                titleSize={20}
-                containerStyle={{
-                    marginBottom: 12
-                }}
+                    onPress={() => {
+                        handleCheck();
+                        show();
+                    }}
+                    backgroundColor={Colors.button1}
+                    title='Check'
+                    tileColor='#fff'
+                    titleSize={20}
+                    containerStyle={{
+                        marginBottom: 12
+                    }}
                 />
             </View>
             <BottomModal backdropColor="rgba(0,0,0,0.5)" height={600} {...modalProps} >
                 <TouchableOpacity style={styles.fill} onPress={dismiss}>
                     <Text style={styles.message}>{message}</Text>
                     <Text style={styles.clashed}>{clashedCourse}</Text>
-                    {savable 
-                    ? <TouchableOpacity disabled={disable} style={[styles.saveButton, {backgroundColor: disable ? '#bd7b7b': '#ff0000'}]} onPress={() => handleSave()}>
-                        <Text style={[styles.title,{color: '#fff', fontWeight: '600', fontSize: 16, }]}>{disable ? 'Saved': 'Save'}</Text>
-                    </TouchableOpacity>
-                    
-                    : null}
+                    {savable
+                        ? <TouchableOpacity disabled={disable} style={[styles.saveButton, { backgroundColor: disable ? '#bd7b7b' : '#ff0000' }]} onPress={() => handleSave()}>
+                            <Text style={[styles.title, { color: '#fff', fontWeight: '600', fontSize: 16, }]}>{disable ? 'Saved' : 'Save'}</Text>
+                        </TouchableOpacity>
+
+                        : null}
                     <Text style={styles.close}>Tap to close</Text>
                 </TouchableOpacity>
             </BottomModal>
@@ -286,7 +286,8 @@ const styles = StyleSheet.create({
         ...Base.page
     },
     searchBar: {
-        paddingHorizontal: 12
+        paddingHorizontal: 12,
+        height: '10%'
     },
     title: {
         fontWeight: 'bold',
@@ -296,7 +297,7 @@ const styles = StyleSheet.create({
     selectedContainer: {
         padding: 12,
         // backgroundColor: '#000',
-        height: 200
+        height: '40%'
     },
     selectedList: {
         padding: 12,
@@ -330,9 +331,14 @@ const styles = StyleSheet.create({
     },
     scrollView: {
         display: 'flex',
-        backgroundColor: '#F5F5F5'
+        backgroundColor: '#F5F5F5',
+        height: '40%'
     },
-    fill: { 
+    checkButton: {
+        paddingHorizontal: 12,
+        height: '10%'
+    },
+    fill: {
         flex: 1,
         width: '100%',
         paddingTop: 50,
@@ -346,12 +352,12 @@ const styles = StyleSheet.create({
         fontSize: 25
     },
     saveButton: {
-        position: 'absolute', 
+        position: 'absolute',
         backgroundColor: '#f57c00',
-        bottom: 300, 
+        bottom: 300,
         minHeight: 40,
         width: '50%',
-        borderRadius: 10, 
+        borderRadius: 10,
         justifyContent: 'center'
     },
     close: {
