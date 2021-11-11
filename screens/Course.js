@@ -174,6 +174,9 @@ export const Course = ({ navigation }) => {
             temp[course.code] = course.section[0]
         })
         // console.log(temp)
+        if (Object.keys(temp).length==0){
+            temp = {empty: 'empty'}
+        }
         if(toggleValue){
             ref.update({
                 sem2: temp
