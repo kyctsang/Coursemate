@@ -30,12 +30,17 @@ export const UserProfile = ({route, navigation}) => {
             
         })
 
-        const refCheckFriend = db.ref('users/' + currentUser + '/friends')
-        refCheckFriend.off()
-        refCheckFriend.on('value', (data) => {
+        /*
+            Will add refCheckFriend here
+            for checking existing friends
+        */
+
+        const refCheckFriendRequest = db.ref('users/' + currentUser + '/requests/friends/sent')
+        refCheckFriendRequest.off()
+        refCheckFriendRequest.on('value', (data) => {
             if (data.val() != null) {
-                Object.entries(data.val()).map((friend, index) => {
-                    if (friend[0] == userBeingSearch){
+                data.val().forEach(element => {
+                    if (element == userBeingSearch){
                         setAdded(true)
                     }
                 })
@@ -47,30 +52,37 @@ export const UserProfile = ({route, navigation}) => {
         for (let i = 0; i < 2; i++){
             let source, target, value
             if (i==0){
-                source = userBeingSearch
+                source = userBeingSearch + "/requests/friends/received"
                 target = currentUser
                 value = "Pending"
             }else{
-                source = currentUser
+                source = currentUser + "/requests/friends/sent"
                 target = userBeingSearch
                 value = "Requested"
             }
-            const ref = db.ref('users/' + source + "/friends/")
+            const ref = db.ref('users/' + source )
             ref.off()
-            var temp = {}
+            var temp = []
             ref.on('value', (data) => {
                 console.log(data.val())
                 if (data.val() != null) {
-                    Object.entries(data.val()).map((username, index) => {
-                        temp[username[0]] = username[1]
-                    })
+                    data.val().forEach(element => {
+                        temp.push(element)
+                    });
                 }
             })
             // console.log(temp)
-            temp[target] = value
-            ref.parent.update({
-                'friends': temp
-            })
+            temp.push(target)
+            if (i == 0){
+                ref.parent.update({
+                    'received': temp
+                })
+            }else{
+                ref.parent.update({
+                    'sent': temp
+                })
+            }
+            
         }
         setAdded(true)
     }
