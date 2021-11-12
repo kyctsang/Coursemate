@@ -71,7 +71,6 @@ export const UserProfile = ({route, navigation}) => {
                     });
                 }
             })
-            // console.log(temp)
             temp.push(target)
             if (i == 0){
                 ref.parent.update({
@@ -82,7 +81,6 @@ export const UserProfile = ({route, navigation}) => {
                     'sent': temp
                 })
             }
-            
         }
         setAdded(true)
     }

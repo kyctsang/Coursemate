@@ -54,6 +54,7 @@ export const Home = ({ navigation }) => {
   
   if (Object.keys(courses).length==0) {
     const ref2 = db.ref('users/'+username+'/sem1')
+    ref2.off()
     ref2.on('value', (data) => {
       // console.log(data.val())
       if (data.val() == null){

@@ -167,6 +167,7 @@ export const Course = ({ navigation }) => {
         // alert("SAVED")
         const username = user.email.substring(0, user.email.length - 10)
         const ref = db.ref('users/' + username)
+        ref.off()
         // console.log(selected)
         var temp = {}
         const selected = toggleValue ? selectedSem2 : selectedSem1
