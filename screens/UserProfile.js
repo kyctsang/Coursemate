@@ -105,7 +105,7 @@ export const UserProfile = ({ route, navigation }) => {
 
     return (
         <View>
-            <View style={{ height: '30%', marginHorizontal: '30%', borderWidth: '1sp', marginVertical: '3%' }}>
+            <View >
                 <Text>Icon</Text>
             </View>
             <Text>@{userBeingSearch}</Text>
@@ -117,10 +117,10 @@ export const UserProfile = ({ route, navigation }) => {
                     onPress={() => handleAddFriend()}
                 />
             </View>
-            <View style={{ borderBottomColor: 'black', borderBottomWidth: '1sp', marginBottom: '3%' }} />
+            <View  />
 
             <View style={styles.coursesConainer}>
-                <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 20, marginBottom: 10 }}>2021-2022 Sem1</Text>
+                <Text >2021-2022 Sem1</Text>
                 {publicOrNot ? courses : <Text>Course List available to friends only</Text>}
             </View>
         </View>
