@@ -279,20 +279,22 @@ export const Course = ({ navigation }) => {
                         }}
                     />
                 </View>
-                <View style={styles.toggleSwitch}>
-                    <ToggleSwitch
-                        text={{ on: 'Sem 1', off: 'Sem 2', activeTextColor: 'white', inactiveTextColor: 'white' }}
-                        textStyle={{ fontWeight: 'bold' }}
-                        color={{ indicator: Colors.orangeButton, active: 'black', inactive: 'black', activeBorder: 'black', inactiveBorder: 'black' }}
-                        active={true}
-                        disabled={false}
-                        width={80}
-                        radius={25}
-                        onValueChange={(val) => {
-                            setToggleValue(!toggleValue);
-                            changeSem()
-                        }}
-                    />
+                <View style={styles.toggleSwitchContainer}>
+                    <View style={styles.toggleSwitch}>
+                        <ToggleSwitch
+                            text={{ on: 'Sem 1', off: 'Sem 2', activeTextColor: 'white', inactiveTextColor: 'white' }}
+                            textStyle={{ fontWeight: 'bold' }}
+                            color={{ indicator: Colors.orangeButton, active: 'black', inactive: 'black', activeBorder: 'black', inactiveBorder: 'black' }}
+                            active={true}
+                            disabled={false}
+                            width={80}
+                            radius={25}
+                            onValueChange={(val) => {
+                                setToggleValue(!toggleValue);
+                                changeSem()
+                            }}
+                        />
+                    </View>
                 </View>
             </View>
             <ScrollView style={styles.scrollView}>
@@ -360,11 +362,13 @@ const styles = StyleSheet.create({
         height: '12%'
     },
     searchBar: {
-        flexBasis: '70%'
+        flexBasis: '65%'
+    },
+    toggleSwitchContainer: {
+        flexBasis: '35%'
     },
     toggleSwitch: {
-        flexBasis: '30%',
-        transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }]
+        transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }]
     },
     title: {
         fontWeight: 'bold',
