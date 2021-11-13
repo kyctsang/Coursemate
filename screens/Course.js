@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, Text, ScrollView, KeyboardAvoidingView, TouchableOpacity, StyleSheet, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useBottomModal, BottomModal } from 'react-native-lightning-modal';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
 
@@ -16,7 +16,12 @@ const db = firebase.database();
 
 const ScreenContainer = ({ children }) => (
     <TouchableWithoutFeedback onPress={() => { Keyboard.dismiss() }}>
-        <View style={styles.container}>{children}</View>
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+            <ScrollView>{children}</ScrollView>
+        </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
 );
 
@@ -232,12 +237,12 @@ export const Course = ({ navigation }) => {
                 })
                 return (
                     <View key={index2} style={{ height: 70 }}>
-                        <InsetShadow>
-                            <TouchableOpacity style={styles.courseList} onPress={() => handleSelect(course[0], timeslots)}>
-                                <Text style={styles.courseTitle}>{course[0]} {timeslots[0]}</Text>
-                                <Text>{timeslot}</Text>
-                            </TouchableOpacity>
-                        </InsetShadow>
+                        {/* <InsetShadow> */}
+                        <TouchableOpacity style={styles.courseList} onPress={() => handleSelect(course[0], timeslots)}>
+                            <Text style={styles.courseTitle}>{course[0]} {timeslots[0]}</Text>
+                            <Text style={styles.courseTimeslot}>{timeslot}</Text>
+                        </TouchableOpacity>
+                        {/* </InsetShadow> */}
                     </View>
                 )
             })
@@ -247,7 +252,7 @@ export const Course = ({ navigation }) => {
     const selectedCourses = (toggleValue ? selectedSem2 : selectedSem1).map((course, index) => {
         return (
             <TouchableOpacity style={styles.selectedItem} key={index} onPress={() => handleDeselect(index)}>
-                <Text>{course.code} {course.section[0]}</Text>
+                <Text style={{ paddingRight: 3 }}>{course.code} {course.section[0]}</Text>
                 <MaterialCommunityIcons
                     name={'window-close'}
                     size={16}
@@ -297,7 +302,7 @@ export const Course = ({ navigation }) => {
                     </View>
                 </View>
             </View>
-            <ScrollView style={styles.scrollView}>
+            <ScrollView style={styles.scrollView} nestedScrollEnabled={true} >
                 {courseList}
             </ScrollView>
             <View style={styles.selectedContainer}>
@@ -358,8 +363,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'row',
+        borderBottomWidth: 0.9,
+        borderColor: Colors.border,
         padding: 12,
-        height: '12%'
+        height: 67
     },
     searchBar: {
         flexBasis: '65%'
@@ -371,31 +378,37 @@ const styles = StyleSheet.create({
         transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }]
     },
     title: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         fontWeight: 'bold',
         fontSize: 16,
         alignSelf: 'center'
     },
     selectedContainer: {
+        borderTopWidth: 0.9,
+        borderColor: Colors.border,
         padding: 12,
-        // backgroundColor: '#000',
-        height: '40%'
+        height: 215
     },
     selectedList: {
         padding: 12,
-        height: 70,
+        height: 170,
+        display: 'flex',
         flexDirection: 'row',
         flexWrap: 'wrap',
-        alignItems: 'center'
-
+        justifyContent: 'center'
     },
     selectedItem: {
+        backgroundColor: '#F0F0F0',
+        borderColor: '#707070',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        width: '40%',
+        flexBasis: '40%',
         borderWidth: 1.5,
         borderRadius: 4,
-        marginHorizontal: 17,
+        marginHorizontal: 10,
         marginVertical: 5,
         height: 40,
         flexDirection: 'row'
@@ -404,16 +417,21 @@ const styles = StyleSheet.create({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        borderBottomWidth: 0.9,
+        borderColor: '#fff',
         padding: 15
     },
     courseTitle: {
         fontWeight: 'bold',
         fontSize: 16
     },
+    courseTimeslot: {
+        paddingTop: 6
+    },
     scrollView: {
+        backgroundColor: '#F0F0F0',
         display: 'flex',
-        backgroundColor: '#F5F5F5',
-        height: '38%'
+        height: 210
     },
     bottomContainer: {
         display: 'flex',
@@ -421,15 +439,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         paddingHorizontal: 12,
-        height: '10%'
+        height: 65
     },
     clearButton: {
-        // flexGrow: 1,
         width: '50%',
         paddingHorizontal: 12
     },
     checkButton: {
-        // flexGrow: 1,
         width: '50%',
         paddingHorizontal: 12
     },

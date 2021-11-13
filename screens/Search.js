@@ -13,7 +13,12 @@ import * as firebase from 'firebase';
 import 'firebase/database';
 
 const ScreenContainer = ({ children }) => (
-    <View >{children}</View>
+    <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+        <ScrollView>{children}</ScrollView>
+    </KeyboardAvoidingView>
 );
 
 const SearchScreen = ({ navigation }) => {
@@ -104,7 +109,7 @@ const SearchScreen = ({ navigation }) => {
                 />
             </View>
             <View style={styles.scrollContainer}>
-                <ScrollView>
+                <ScrollView nestedScrollEnabled={true}>
                     {usersList}
                 </ScrollView>
             </View>
@@ -129,25 +134,25 @@ const styles = StyleSheet.create({
         ...Base.page
     },
     searchBar: {
-        height: '12%',
-        padding: 12
+        height: 67,
+        padding: 12,
+        borderBottomWidth: 0.9,
+        borderColor: Colors.border
     },
     scrollContainer: {
-        height: '88%'
+        // height: '88%'
     },
     usersList: {
         display: 'flex',
         flexDirection: 'row',
         height: 80,
         padding: 14,
-        borderTopWidth: 0.8,
-        borderColor: '#E8E8E8'
+        borderBottomWidth: 0.9,
+        borderColor: Colors.border
     },
     profilePicContainer: {
-        // backgroundColor: '#000',
         alignItems: 'center',
         justifyContent: 'center',
-        // width: 10,
         flexGrow: 1
     },
     profilePic: {
@@ -168,11 +173,9 @@ const styles = StyleSheet.create({
         fontSize: 16
     },
     addButton: {
-        // backgroundColor: '#000',
         alignItems: 'center',
         justifyContent: 'center',
         flexGrow: 1,
-        // width: 10,
         paddingLeft: 10
     },
 })
