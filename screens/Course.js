@@ -42,10 +42,14 @@ export const Course = ({ navigation }) => {
 
     useEffect(() => {
         var ref = db.ref('courses/sem1/');
-        ref.on('value', (data) => {gotCourses(data, 1)});
+        ref.on('value', (data) => { gotCourses(data, 1) });
         ref = db.ref('courses/sem2/');
-        ref.on('value', (data) => {gotCourses(data, 2)});
+        ref.on('value', (data) => { gotCourses(data, 2) });
     }, []);
+
+    function clearState() {
+        toggleValue ? setSelectedSem2([]) : setSelectedSem1([])
+    }
 
     function gotCourses(data, sem) {
         // console.log(data.val())
@@ -54,16 +58,16 @@ export const Course = ({ navigation }) => {
         //     console.log("TITLE: " + element.title)
         // });
         console.log("Fetched")
-        if (sem==1){
+        if (sem == 1) {
             setCourses(data.val())
             setCoursesSem1(data.val())
-        }else{
+        } else {
             setCoursesSem2(data.val())
         }
         // console.log(courses) 
     }
 
-    function handleSearch(text){
+    function handleSearch(text) {
         const coursesSem = toggleValue ? coursesSem2 : coursesSem1
         var temp = {}
         // console.log("START")
@@ -175,26 +179,26 @@ export const Course = ({ navigation }) => {
             temp[course.code] = course.section[0]
         })
         // console.log(temp)
-        if (Object.keys(temp).length==0){
-            temp = {empty: 'empty'}
+        if (Object.keys(temp).length == 0) {
+            temp = { empty: 'empty' }
         }
-        if(toggleValue){
+        if (toggleValue) {
             ref.update({
                 sem2: temp
             })
-        }else{
+        } else {
             ref.update({
                 sem1: temp
             })
         }
-        
+
         setDisable(true)
     }
 
-    function changeSem(){
-        if(toggleValue){
+    function changeSem() {
+        if (toggleValue) {
             setCourses(coursesSem1)
-        }else{
+        } else {
             setCourses(coursesSem2)
         }
     }
@@ -279,7 +283,7 @@ export const Course = ({ navigation }) => {
                     <ToggleSwitch
                         text={{ on: 'Sem 1', off: 'Sem 2', activeTextColor: 'white', inactiveTextColor: 'white' }}
                         textStyle={{ fontWeight: 'bold' }}
-                        color={{ indicator: Colors.button1, active: 'black', inactive: 'black', activeBorder: 'black', inactiveBorder: 'black' }}
+                        color={{ indicator: Colors.orangeButton, active: 'black', inactive: 'black', activeBorder: 'black', inactiveBorder: 'black' }}
                         active={true}
                         disabled={false}
                         width={80}
@@ -300,17 +304,30 @@ export const Course = ({ navigation }) => {
                     {selectedCourses}
                 </View>
             </View>
-            <View style={styles.checkButton}>
-                <Button
-                    onPress={() => {
-                        handleCheck();
-                        show();
-                    }}
-                    backgroundColor={Colors.button1}
-                    title='Check'
-                    tileColor='#fff'
-                    titleSize={20}
-                />
+            <View style={styles.bottomContainer}>
+                <View style={styles.clearButton}>
+                    <Button
+                        onPress={() => {
+                            clearState();
+                        }}
+                        backgroundColor={Colors.greyButton}
+                        title='Clear'
+                        tileColor='#fff'
+                        titleSize={20}
+                    />
+                </View>
+                <View style={styles.checkButton}>
+                    <Button
+                        onPress={() => {
+                            handleCheck();
+                            show();
+                        }}
+                        backgroundColor={Colors.orangeButton}
+                        title='Check'
+                        tileColor='#fff'
+                        titleSize={20}
+                    />
+                </View>
             </View>
             <BottomModal backdropColor="rgba(0,0,0,0.5)" height={600} {...modalProps} >
                 <TouchableOpacity style={styles.fill} onPress={dismiss}>
@@ -394,12 +411,23 @@ const styles = StyleSheet.create({
         backgroundColor: '#F5F5F5',
         height: '38%'
     },
-    checkButton: {
+    bottomContainer: {
         display: 'flex',
+        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         paddingHorizontal: 12,
         height: '10%'
+    },
+    clearButton: {
+        // flexGrow: 1,
+        width: '50%',
+        paddingHorizontal: 12
+    },
+    checkButton: {
+        // flexGrow: 1,
+        width: '50%',
+        paddingHorizontal: 12
     },
     fill: {
         flex: 1,
