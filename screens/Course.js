@@ -20,7 +20,7 @@ const ScreenContainer = ({ children }) => (
             style={styles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-            <ScrollView>{children}</ScrollView>
+            {children}
         </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
 );
@@ -38,7 +38,6 @@ export const Course = ({ navigation }) => {
     const [disable, setDisable] = useState(false)
     const { dismiss, show, modalProps } = useBottomModal();
     const [toggleValue, setToggleValue] = useState(false);
-
 
     const { user } = useContext(AuthenticatedUserContext);
     const day = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri']
@@ -393,7 +392,6 @@ const styles = StyleSheet.create({
     },
     selectedList: {
         padding: 12,
-        height: 170,
         display: 'flex',
         flexDirection: 'row',
         flexWrap: 'wrap',
@@ -431,7 +429,8 @@ const styles = StyleSheet.create({
     scrollView: {
         backgroundColor: '#F0F0F0',
         display: 'flex',
-        height: 210
+        minHeight: 210,
+        height: 'auto'
     },
     bottomContainer: {
         display: 'flex',
