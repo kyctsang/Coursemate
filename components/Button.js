@@ -3,6 +3,7 @@ import { StyleSheet, Pressable, Text } from 'react-native';
 
 const Button = ({
   title,
+  disabled = false,
   backgroundColor = '#000',
   titleColor = '#fff',
   titleSize = 14,
@@ -12,6 +13,7 @@ const Button = ({
 }) => {
   return (
     <Pressable
+      disabled={disabled}
       onPress={onPress}
       style={args => {
         if (args.pressed) {
