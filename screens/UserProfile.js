@@ -48,42 +48,7 @@ export const UserProfile = ({ route, navigation }) => {
         })
     }, [])
 
-    function handleAddFriend() {
-        for (let i = 0; i < 2; i++) {
-            let source, target, value
-            if (i == 0) {
-                source = userBeingSearch + "/requests/friends/received"
-                target = currentUser
-                value = "Pending"
-            } else {
-                source = currentUser + "/requests/friends/sent"
-                target = userBeingSearch
-                value = "Requested"
-            }
-            const ref = db.ref('users/' + source)
-            ref.off()
-            var temp = []
-            ref.on('value', (data) => {
-                console.log(data.val())
-                if (data.val() != null) {
-                    data.val().forEach(element => {
-                        temp.push(element)
-                    });
-                }
-            })
-            temp.push(target)
-            if (i == 0) {
-                ref.parent.update({
-                    'received': temp
-                })
-            } else {
-                ref.parent.update({
-                    'sent': temp
-                })
-            }
-        }
-        setAdded(true)
-    }
+    
 
     const courses = Object.entries(coursesSem1).map((course, index) => {
         // console.log(course)
@@ -111,10 +76,10 @@ export const UserProfile = ({ route, navigation }) => {
             <Text>@{userBeingSearch}</Text>
             <View style={styles.addButton}>
                 <Button
-                    disabled={added}
-                    title={added ? "Requested" : "Add Friend"}
+                    // disabled={added} 
+                    title={added ? "Undo" : "Add Friend"}
                     backgroundColor={added ? 'black' : 'red'}
-                    onPress={() => handleAddFriend()}
+                    onPress={() => {handleAddFriends(currentUser, userBeingSearch, added); setAdded(!added)}}
                 />
             </View>
             <View  />
@@ -126,6 +91,53 @@ export const UserProfile = ({ route, navigation }) => {
         </View>
 
     )
+}
+
+export function handleAddFriends(currentUser, userBeingAdded, added) {
+    const db = firebase.database();
+    for (let i = 0; i < 2; i++) {
+        let source, target
+        if (i == 0) {
+            source = userBeingAdded + "/requests/friends/received"
+            target = currentUser
+        } else {
+            source = currentUser + "/requests/friends/sent"
+            target = userBeingAdded
+        }
+        const ref = db.ref('users/' + source)
+        ref.off()
+        var temp = []
+        if(added){
+            ref.on('value', (data) => {
+                if(data.val() != null ){
+                    data.val().forEach(element => {
+                        if(element != target){
+                            temp.push(element)
+                        }
+                    })
+                }
+            })
+        }else{
+            ref.on('value', (data) => {
+                console.log(data.val())
+                if (data.val() != null) {
+                    data.val().forEach(element => {
+                        temp.push(element)
+                    });
+                }
+            })
+            temp.push(target)
+        }
+        if (i == 0) {
+            ref.parent.update({
+                'received': temp
+            })
+        } else {
+            ref.parent.update({
+                'sent': temp
+            })
+        }
+    }
 }
 
 

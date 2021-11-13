@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Touchable, TouchableOpacity, ScrollView } from 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Avatar } from 'react-native-elements';
-import { UserProfile } from './UserProfile';
+import { UserProfile, handleAddFriends } from './UserProfile';
 
 import { Typography, Colors, Base } from '../styles';
 import { InputField, Button } from '../components';
@@ -50,12 +50,41 @@ const SearchScreen = ({ navigation }) => {
         setUsersDetail(temp)
     }
 
+    function checkFriends(username){
+        var i = 0
+        var returnButton = [["Add", Colors.orangeButton, false], ["Undo", Colors.blackButton, true]]
+        const refRequest = db.ref('users/' + currentUsername + '/requests/friends/sent/')
+        refRequest.off()
+        refRequest.on('value', (data) => {
+            // console.log(data.val())
+            if(data.val() != null){
+                if(data.val().includes(username)){
+                    // console.log(username + "matched!!!")
+                    i = 1
+                }
+            }
+        })
+        // Will update after notification is done
+        // const refFriend = db.ref('users/' + currentUsername + '/friends/')
+        // refFriend.off()
+        // refFriend.on('value', (data) => {
+        //     // console.log(data.val())
+        //     if(data.val() != null){
+        //         // setFriends(data.val())
+        //         // console.log("HI" + data.val())
+        //     }
+        //     // console.log(friends)
+        // })
+        return returnButton[i]
+    }
+
+
     const usersList = Object.entries(usersDetail).map((username, index) => {
-        // console.log(username)
+        // will have three states, 1. add, 2. sent, 3. already friends
+        var [buttonText, buttonColor, added] = checkFriends(username[0])
         if (username[0] != currentUsername) {
             return (
                 <View key={index}>
-                    {/* add icon at the leftmost of the bar? */}
                     <TouchableOpacity
                         style={styles.usersList}
                         onPress={() => {
@@ -76,9 +105,9 @@ const SearchScreen = ({ navigation }) => {
                         </View>
                         <View style={styles.addButton}>
                             <Button
-                                onPress={() => { }}
-                                backgroundColor={Colors.orangeButton}
-                                title='Add'
+                                onPress={() => { handleAddFriends(currentUsername, username[0], added) }}
+                                backgroundColor={buttonColor}
+                                title={buttonText}
                                 tileColor='#fff'
                                 titleSize={14}
                             />
