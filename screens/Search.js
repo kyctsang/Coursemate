@@ -1,10 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet, Touchable, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Touchable, TouchableOpacity, ScrollView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { Avatar } from 'react-native-elements';
 import { UserProfile } from './UserProfile';
 
-import { InputField } from '../components';
+import { Typography, Colors, Base } from '../styles';
+import { InputField, Button } from '../components';
 import Firebase from '../config/firebase';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
 import * as firebase from 'firebase';
@@ -12,13 +14,13 @@ import 'firebase/database';
 
 const ScreenContainer = ({ children }) => (
     <View >{children}</View>
-  );
+);
 
-const SearchScreen = ({navigation}) => {
+const SearchScreen = ({ navigation }) => {
     const db = firebase.database()
     const auth = Firebase.auth()
     const { user } = useContext(AuthenticatedUserContext)
-    const currentUsername = user.email.substring(0, user.email.length-10)
+    const currentUsername = user.email.substring(0, user.email.length - 10)
     const [usersDetail, setUsersDetail] = useState({})
     const [usersDetail2, setUsersDetail2] = useState({})
 
@@ -32,11 +34,11 @@ const SearchScreen = ({navigation}) => {
         })
     }, [])
 
-    function handleSearch(text){
+    function handleSearch(text) {
         // console.log(text)
         var temp = {}
         Object.entries(usersDetail2).map((candidate, index) => {
-            if(candidate[0].includes(text)){
+            if (candidate[0].includes(text)) {
                 temp[candidate[0]] = candidate[1]
             }
         })
@@ -45,20 +47,43 @@ const SearchScreen = ({navigation}) => {
 
     const usersList = Object.entries(usersDetail).map((username, index) => {
         // console.log(username)
-        if(username[0] != currentUsername){
-            return(
-                <View key={index} style={{height:50, backgroundColor: 'yellow', borderWidth: 1}}>
+        if (username[0] != currentUsername) {
+            return (
+                <View key={index}>
                     {/* add icon at the leftmost of the bar? */}
-                    <TouchableOpacity style={styles.usersList} onPress={() => navigation.navigate('Friend', {currentUser: currentUsername, userBeingSearch: username[0]})}>
-                        <Text key={index} style={styles.usersTitle}>{username[0]}</Text>
+                    <TouchableOpacity
+                        style={styles.usersList}
+                        onPress={() => {
+                            navigation.navigate('Friend', { currentUser: currentUsername, userBeingSearch: username[0] })
+                        }}
+                    >
+                        <View style={styles.profilePic}>
+                            <Avatar
+                                rounded
+                                source={require('../assets/emptyProPic.png')}
+                            />
+                        </View>
+                        <View style={styles.usersInfo}>
+                            <Text style={styles.firstLastName}>{'First Last'}</Text>
+                            <Text style={styles.userName}>{'@' + username[0]}</Text>
+                        </View>
+                        <View style={styles.addButton}>
+                            <Button
+                                onPress={() => { }}
+                                backgroundColor={Colors.orangeButton}
+                                title='Add'
+                                tileColor='#fff'
+                                titleSize={16}
+                            />
+                        </View>
                     </TouchableOpacity>
                 </View>
             )
         }
     })
 
-    return(
-        <View>
+    return (
+        <View style={styles.container}>
             <View style={styles.searchBar}>
                 <InputField
                     inputStyle={{
@@ -71,46 +96,80 @@ const SearchScreen = ({navigation}) => {
                     placeholder='Enter username'
                     autoCapitalize='none'
                     autoCorrect={false}
-                    // textContentType='password'
-                    // value={target}
                     onChangeText={text => {
                         handleSearch(text.toLowerCase());
                     }}
                 />
+            </View>
+            <View style={styles.scrollContainer}>
                 <ScrollView>
-                    
                     {usersList}
                 </ScrollView>
-            </View>             
-        </View>
+            </View>
+        </View >
     )
 }
 
 
 
-export const Search = ({navigation}) => {
+export const Search = ({ navigation }) => {
     const Stack = createStackNavigator();
-    return(
+    return (
         <Stack.Navigator initialRouteName="Search">
-            <Stack.Screen name="Search" component={SearchScreen} />
+            <Stack.Screen name="User Search" component={SearchScreen} />
             <Stack.Screen name="Friend" component={UserProfile} />
         </Stack.Navigator>
     )
-    
 }
 
 const styles = StyleSheet.create({
+    container: {
+        ...Base.page
+    },
     searchBar: {
-        flexBasis: '70%',
-        height: '10%'
+        height: '12%',
+        padding: 12
+    },
+    scrollContainer: {
+        height: '88%'
     },
     usersList: {
         display: 'flex',
-        paddingLeft: 50,
-        padding: 15
+        flexDirection: 'row',
+        height: 80,
+        padding: 15,
+        borderTopWidth: 0.8,
+        borderColor: '#E8E8E8'
     },
-    usersTitle: {
+    profilePic: {
+        // backgroundColor: '#000',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 10,
+        flexGrow: 1,
+        transform: [{ scaleX: 1.4 }, { scaleY: 1.4 }]
+    },
+    usersInfo: {
+        backgroundColor: '#F0F0F0',
+        borderRadius: 6,
+        flexGrow: 2,
+        flexDirection: 'column',
+        paddingLeft: 12
+    },
+    firstLastName: {
         fontWeight: 'bold',
+        fontSize: 20
+    },
+    userName: {
         fontSize: 16
+    },
+    addButton: {
+        // backgroundColor: '#000',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexGrow: 1,
+        // height: 6,
+        width: 10,
+        padding: 14
     },
 })

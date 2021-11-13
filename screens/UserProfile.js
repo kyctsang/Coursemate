@@ -7,10 +7,10 @@ import { add } from 'react-native-reanimated';
 
 const ScreenContainer = ({ children }) => (
     <View style={styles.container}>{children}</View>
-  );
+);
 
-export const UserProfile = ({route, navigation}) => {
-    const {currentUser, userBeingSearch} = route.params
+export const UserProfile = ({ route, navigation }) => {
+    const { currentUser, userBeingSearch } = route.params
     const [publicOrNot, setPublicOrNot] = useState(true)
     const [coursesSem1, setCoursesSem1] = useState({})
     const [coursesSem2, setCoursesSem2] = useState({})
@@ -27,7 +27,7 @@ export const UserProfile = ({route, navigation}) => {
             setCoursesSem2(data.val()['sem2'])
             // console.log(coursesSem1)
             // console.log(data.val()['sem1'])
-            
+
         })
 
         /*
@@ -40,7 +40,7 @@ export const UserProfile = ({route, navigation}) => {
         refCheckFriendRequest.on('value', (data) => {
             if (data.val() != null) {
                 data.val().forEach(element => {
-                    if (element == userBeingSearch){
+                    if (element == userBeingSearch) {
                         setAdded(true)
                     }
                 })
@@ -48,19 +48,19 @@ export const UserProfile = ({route, navigation}) => {
         })
     }, [])
 
-    function handleAddFriend(){
-        for (let i = 0; i < 2; i++){
+    function handleAddFriend() {
+        for (let i = 0; i < 2; i++) {
             let source, target, value
-            if (i==0){
+            if (i == 0) {
                 source = userBeingSearch + "/requests/friends/received"
                 target = currentUser
                 value = "Pending"
-            }else{
+            } else {
                 source = currentUser + "/requests/friends/sent"
                 target = userBeingSearch
                 value = "Requested"
             }
-            const ref = db.ref('users/' + source )
+            const ref = db.ref('users/' + source)
             ref.off()
             var temp = []
             ref.on('value', (data) => {
@@ -72,11 +72,11 @@ export const UserProfile = ({route, navigation}) => {
                 }
             })
             temp.push(target)
-            if (i == 0){
+            if (i == 0) {
                 ref.parent.update({
                     'received': temp
                 })
-            }else{
+            } else {
                 ref.parent.update({
                     'sent': temp
                 })
@@ -87,64 +87,64 @@ export const UserProfile = ({route, navigation}) => {
 
     const courses = Object.entries(coursesSem1).map((course, index) => {
         // console.log(course)
-        if(course[1] == 'empty'){
-            return(
-            <View key={index} style={styles.courses}>
-                <Text style={styles.courseTitle}>No saved course yet!</Text>
-            </View>
+        if (course[1] == 'empty') {
+            return (
+                <View key={index} style={styles.courses}>
+                    <Text style={styles.courseTitle}>No saved course yet!</Text>
+                </View>
             )
         }
-        return(
+        return (
             <View key={index} style={styles.courses}>
                 <Text style={styles.courseTitle}>{course[0]} {course[1]}</Text>
             </View>
         )
     })
 
-    
 
-    return(
+
+    return (
         <View>
-            <View style={{height:'30%', marginHorizontal: '30%', borderWidth:'1sp', marginVertical: '3%'}}>
+            <View style={{ height: '30%', marginHorizontal: '30%', borderWidth: '1sp', marginVertical: '3%' }}>
                 <Text>Icon</Text>
             </View>
             <Text>@{userBeingSearch}</Text>
             <View style={styles.addButton}>
-                <Button 
-                disabled={added}
-                title={added ? "Requested" : "Add Friend" }
-                backgroundColor={added ? 'black' : 'red'}
-                onPress={() => handleAddFriend()}
+                <Button
+                    disabled={added}
+                    title={added ? "Requested" : "Add Friend"}
+                    backgroundColor={added ? 'black' : 'red'}
+                    onPress={() => handleAddFriend()}
                 />
             </View>
-            <View style={{borderBottomColor: 'black', borderBottomWidth: '1sp', marginBottom: '3%'}}/>
-            
+            <View style={{ borderBottomColor: 'black', borderBottomWidth: '1sp', marginBottom: '3%' }} />
+
             <View style={styles.coursesConainer}>
-                <Text style={{textAlign: 'center', fontWeight: 'bold', fontSize: 20, marginBottom: 10}}>2021-2022 Sem1</Text>
+                <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 20, marginBottom: 10 }}>2021-2022 Sem1</Text>
                 {publicOrNot ? courses : <Text>Course List available to friends only</Text>}
             </View>
         </View>
-        
+
     )
-  }
+}
 
 
-  const styles = StyleSheet.create({
+const styles = StyleSheet.create({
     coursesConainer: {
-        justifyContent:'center',
+        justifyContent: 'center',
         alignItems: 'center'
     },
     courses: {
-        height: 50, 
-        borderWidth: 3, 
-        borderRadius: 5, 
-        margin: 3, 
-        width:'80%',
+        height: 50,
+        borderWidth: 3,
+        borderRadius: 5,
+        margin: 3,
+        width: '80%',
         justifyContent: 'center',
         backgroundColor: '#fcba03'
     },
     courseTitle: {
-        fontWeight: 'bold', 
+        fontWeight: 'bold',
         textAlign: 'center'
     },
     addButton: {
@@ -155,4 +155,4 @@ export const UserProfile = ({route, navigation}) => {
         height: '10%',
         marginVertical: '5%'
     }
-  })
+})
