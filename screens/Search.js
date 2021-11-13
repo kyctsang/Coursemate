@@ -57,11 +57,13 @@ const SearchScreen = ({ navigation }) => {
                             navigation.navigate('Friend', { currentUser: currentUsername, userBeingSearch: username[0] })
                         }}
                     >
-                        <View style={styles.profilePic}>
-                            <Avatar
-                                rounded
-                                source={require('../assets/emptyProPic.png')}
-                            />
+                        <View style={styles.profilePicContainer}>
+                            <View style={styles.profilePic}>
+                                <Avatar
+                                    rounded
+                                    source={require('../assets/emptyProPic.png')}
+                                />
+                            </View>
                         </View>
                         <View style={styles.usersInfo}>
                             <Text style={styles.firstLastName}>{'First Last'}</Text>
@@ -73,7 +75,7 @@ const SearchScreen = ({ navigation }) => {
                                 backgroundColor={Colors.orangeButton}
                                 title='Add'
                                 tileColor='#fff'
-                                titleSize={16}
+                                titleSize={14}
                             />
                         </View>
                     </TouchableOpacity>
@@ -137,16 +139,18 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
         height: 80,
-        padding: 15,
+        padding: 14,
         borderTopWidth: 0.8,
         borderColor: '#E8E8E8'
     },
-    profilePic: {
+    profilePicContainer: {
         // backgroundColor: '#000',
         alignItems: 'center',
         justifyContent: 'center',
-        width: 10,
-        flexGrow: 1,
+        // width: 10,
+        flexGrow: 1
+    },
+    profilePic: {
         transform: [{ scaleX: 1.4 }, { scaleY: 1.4 }]
     },
     usersInfo: {
@@ -168,8 +172,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         flexGrow: 1,
-        // height: 6,
-        width: 10,
-        padding: 14
+        // width: 10,
+        paddingLeft: 10
     },
 })
