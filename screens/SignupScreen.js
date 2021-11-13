@@ -110,7 +110,7 @@ export default function SignupScreen({ navigation }) {
         handlePasswordVisibility={handlePasswordVisibility}
       />
       {usernameError ? <ErrorMessage error={message} visible={true} /> : <ValidMessage valid={message} visible={true}/>}
-      <TouchableOpacity disabled={ !usernameError && !passwordError ? false : true } style={[styles.signUpButton, {backgroundColor: !usernameError && !passwordError ? '#f57c00' : '#e6a86a'}]} onPress={onHandleSignup}>
+      <TouchableOpacity disabled={ !usernameError && !passwordError ? false : true } style={[styles.signUpButton, {backgroundColor: !usernameError && !passwordError ? Colors.orangeButton : '#e6a86a'}]} onPress={onHandleSignup}>
         <Text style={{color:'#fff', fontSize: 20, fontWeight: '600'}}>Signup</Text>
       </TouchableOpacity>
       <Button

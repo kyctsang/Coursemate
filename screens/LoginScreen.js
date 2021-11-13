@@ -80,7 +80,7 @@ export default function LoginScreen({ navigation }) {
       {loginError ? <ErrorMessage error={loginError} visible={true} /> : null}
       <Button
         onPress={onLogin}
-        backgroundColor={Colors.button1}
+        backgroundColor={Colors.orangeButton}
         title='Login'
         tileColor='#fff'
         titleSize={20}
@@ -90,7 +90,7 @@ export default function LoginScreen({ navigation }) {
       />
       <Button
         onPress={() => navigation.navigate('Signup')}
-        backgroundColor={Colors.button2}
+        backgroundColor={Colors.blackButton}
         title='Sign up for an account'
         tileColor='#fff'
         titleSize={16}
