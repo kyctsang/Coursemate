@@ -228,7 +228,8 @@ export const Course = ({ navigation }) => {
                 })
                 temp.forEach((element, index3) => {
                     if (element != 0) {
-                        timeslot += pad + '(' + day[index3] + ') ' + slot[temp2[index3]] + '⁠–' + slot[temp2[index3] + element]
+                        var end = slot[temp2[index3] + element].substring(0,3) + "20"
+                        timeslot += pad + '(' + day[index3] + ') ' + slot[temp2[index3]] + '⁠–' + end
                     }
                     if (timeslot != "") {
                         pad = "   "

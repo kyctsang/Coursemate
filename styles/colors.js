@@ -6,6 +6,8 @@ export const blackButton = '#000';
 
 export const greyButton = '#B8B8B8';
 
+export const greenButton = '#03fc3d';
+
 export const bottomTabBar = '#f57c00';
 
 export const courseList = '#808080';

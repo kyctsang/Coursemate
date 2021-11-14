@@ -52,7 +52,7 @@ const SearchScreen = ({ navigation }) => {
 
     function checkFriends(username){
         var i = 0
-        var returnButton = [["Add", Colors.orangeButton, false], ["Undo", Colors.blackButton, true]]
+        var returnButton = [["Add", Colors.orangeButton, false, false], ["Undo", Colors.blackButton, true, false], ["Friend", Colors.greenButton, true, true]]
         const refRequest = db.ref('users/' + currentUsername + '/requests/friends/sent/')
         refRequest.off()
         refRequest.on('value', (data) => {
@@ -64,24 +64,22 @@ const SearchScreen = ({ navigation }) => {
                 }
             }
         })
-        // Will update after notification is done
-        // const refFriend = db.ref('users/' + currentUsername + '/friends/')
-        // refFriend.off()
-        // refFriend.on('value', (data) => {
-        //     // console.log(data.val())
-        //     if(data.val() != null){
-        //         // setFriends(data.val())
-        //         // console.log("HI" + data.val())
-        //     }
-        //     // console.log(friends)
-        // })
+        const refFriend = db.ref('users/' + currentUsername + '/friends/')
+        refFriend.off()
+        refFriend.on('value', (data) => {
+            if(data.val() != null){
+                if (data.val().includes(username)){
+                    i = 2
+                }
+            }
+        })
         return returnButton[i]
     }
 
 
     const usersList = Object.entries(usersDetail).map((username, index) => {
         // will have three states, 1. add, 2. sent, 3. already friends
-        var [buttonText, buttonColor, added] = checkFriends(username[0])
+        var [buttonText, buttonColor, added, disable] = checkFriends(username[0])
         if (username[0] != currentUsername) {
             return (
                 <View key={index}>
@@ -105,6 +103,7 @@ const SearchScreen = ({ navigation }) => {
                         </View>
                         <View style={styles.addButton}>
                             <Button
+                                disabled={disable}
                                 onPress={() => { handleAddFriends(currentUsername, username[0], added) }}
                                 backgroundColor={buttonColor}
                                 title={buttonText}

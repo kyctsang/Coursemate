@@ -3,7 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button } from '../components';
 import * as firebase from 'firebase';
 import 'firebase/database';
-import { add } from 'react-native-reanimated';
+import { Colors } from '../styles';
 
 const ScreenContainer = ({ children }) => (
     <View style={styles.container}>{children}</View>
@@ -14,7 +14,7 @@ export const UserProfile = ({ route, navigation }) => {
     const [publicOrNot, setPublicOrNot] = useState(true)
     const [coursesSem1, setCoursesSem1] = useState({})
     const [coursesSem2, setCoursesSem2] = useState({})
-    const [added, setAdded] = useState(false)
+    const [isFriend, setIsFriend] = useState(false)
     const db = firebase.database();
 
     useEffect(() => {
@@ -27,28 +27,53 @@ export const UserProfile = ({ route, navigation }) => {
             setCoursesSem2(data.val()['sem2'])
             // console.log(coursesSem1)
             // console.log(data.val()['sem1'])
-
-        })
-
-        /*
-            Will add refCheckFriend here
-            for checking existing friends
-        */
-
-        const refCheckFriendRequest = db.ref('users/' + currentUser + '/requests/friends/sent')
-        refCheckFriendRequest.off()
-        refCheckFriendRequest.on('value', (data) => {
-            if (data.val() != null) {
-                data.val().forEach(element => {
-                    if (element == userBeingSearch) {
-                        setAdded(true)
-                    }
-                })
+            if (data.val()['friends'] != null) {
+                if (data.val()['friends'].includes(currentUser)){
+                    setIsFriend(true)
+                    console.log("friend:")
+                    console.log(isFriend)
+                }
             }
         })
     }, [])
 
-    
+    const friendButton = (() => {
+        var disable = false
+        var buttonText = "Add friend"
+        var buttonColor = Colors.orangeButton
+        var added = false
+        const refCheckFriendRequest = db.ref('users/' + currentUser + '/requests/friends/sent')
+        refCheckFriendRequest.off()
+        refCheckFriendRequest.on('value', (data) => {
+            if (data.val() != null) {
+                if (data.val().includes(userBeingSearch)){
+                    buttonText = "Undo"
+                    buttonColor = Colors.blackButton
+                    added = true
+                }
+            }
+        })
+
+        const refCheckFriend = db.ref('users/' + currentUser + "/friends")
+        refCheckFriend.off()
+        refCheckFriend.on('value', (data) => {
+            if (data.val() != null){
+                if(data.val().includes(userBeingSearch)){
+                    disable = true
+                    buttonText = "Friend"
+                    buttonColor = Colors.greenButton
+                }
+            }
+        })
+        return(
+            <Button
+                disabled={disable} 
+                title={buttonText}
+                backgroundColor={buttonColor}
+                onPress={() => {handleAddFriends(currentUser, userBeingSearch, added); }}
+            />
+        )
+    })
 
     const courses = Object.entries(coursesSem1).map((course, index) => {
         // console.log(course)
@@ -75,18 +100,12 @@ export const UserProfile = ({ route, navigation }) => {
             </View>
             <Text>@{userBeingSearch}</Text>
             <View style={styles.addButton}>
-                <Button
-                    // disabled={added} 
-                    title={added ? "Undo" : "Add Friend"}
-                    backgroundColor={added ? 'black' : 'red'}
-                    onPress={() => {handleAddFriends(currentUser, userBeingSearch, added); setAdded(!added)}}
-                />
+                {friendButton()}
             </View>
-            <View  />
 
             <View style={styles.coursesConainer}>
                 <Text >2021-2022 Sem1</Text>
-                {publicOrNot ? courses : <Text>Course List available to friends only</Text>}
+                {isFriend || publicOrNot ? courses : <Text>Course List available to friends only</Text>}
             </View>
         </View>
 
@@ -109,21 +128,19 @@ export function handleAddFriends(currentUser, userBeingAdded, added) {
         var temp = []
         if(added){
             ref.on('value', (data) => {
-                if(data.val() != null ){
-                    data.val().forEach(element => {
-                        if(element != target){
-                            temp.push(element)
-                        }
-                    })
+                if(data.val() != null){
+                    temp = data.val()
+                    var index = temp.indexOf(target)
+                    if (index > -1){
+                        temp.splice(index, 1)
+                    }
                 }
             })
         }else{
             ref.on('value', (data) => {
                 console.log(data.val())
                 if (data.val() != null) {
-                    data.val().forEach(element => {
-                        temp.push(element)
-                    });
+                    temp = data.val()
                 }
             })
             temp.push(target)
