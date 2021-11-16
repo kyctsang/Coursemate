@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useContext, useEffect, useState } from "react";
-import { View, Text, StyleSheet, Button } from "react-native";
+import { View, Text, StyleSheet, Button, Switch} from "react-native";
 
 import { Typography, Colors, Base } from '../styles';
 import InsetShadow from 'react-native-inset-shadow'
@@ -10,9 +10,16 @@ import Firebase from '../config/firebase';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
 import * as firebase from 'firebase';
 import 'firebase/database';
+import ToggleSwitch from 'rn-toggle-switch'
+import Swiper from 'react-native-swiper'
+
+//import { Tab } from 'react-native-elements';
+//import { NavigationContainer } from '@react-navigation/native';
+//import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 const auth = Firebase.auth();
 const db = firebase.database();
+
 
 const ScreenContainer = ({ children }) => (
   <View style={styles.container}>{children}</View>
@@ -20,9 +27,34 @@ const ScreenContainer = ({ children }) => (
 
 export const Home = ({ navigation }) => {
   const [privacy, setPrivacy] = useState('public')
-  const [courses, setCourses] = useState({})
+  //const [mode, setMode] = useState({})
   const { user } = useContext(AuthenticatedUserContext);
+  const [courses, setCourses] = useState({})
+
   const username = user.email.substring(0,user.email.length-10)
+  const [toggleValue, setToggleValue] = useState(true);
+  function changeMode() {
+    const ref = db.ref('users/' + username)
+    ref.off()
+    ref.on('value', (data) => {
+      if(data.val()!=null){
+        console.log("not NULL!!!")
+        if (toggleValue) {
+            setPrivacy('private')
+            ref.set({
+                public: false
+            })
+        } else {
+            setPrivacy('public')
+            ref.set({
+                public: true
+            })
+        }
+        console.log("inserted")
+      }
+    })
+      
+  }
 
   useEffect(() => {
     // const username = user.email.substring(0,user.email.length-10)
@@ -78,31 +110,89 @@ export const Home = ({ navigation }) => {
     )
   })
   
-
+  var tempmode = privacy;
+  tempmode = tempmode.charAt(0).toUpperCase() + tempmode.slice(1);
+  const [isEnabled, setIsEnabled] = useState(false);
+  const toggleSwitch = () => setIsEnabled(previousState => !previousState);
   return (
   <ScreenContainer>
     <StatusBar style='dark-content' />
-      <View style={styles.row}>
-        <Text style={styles.title}>Welcome {user.email.substring(0,user.email.length-10)}!</Text>
+      <View style={styles.row, {flexDirection: 'column'},{justifyContent: 'center',
+    alignItems: 'center', paddingBottom:10}}>
+        <View style={{flexDirection: 'row'}}>
+        <Text style={styles.title}>{user.email.substring(0,user.email.length-10)} </Text>
         <IconButton
           name='logout'
-          size={24}
+          size={20}
           color='#000'
           onPress={handleSignOut}
         />
+        </View>
+          <View style={styles.toggleSwitch}>
+            <ToggleSwitch
+                text={{ on: 'Public', off: 'Private', activeTextColor: 'white', inactiveTextColor: 'white' }}
+                textStyle={{ fontWeight: 'bold',fontSize:17 }}
+                color={{ indicator: Colors.orangeButton, active: 'black', inactive: 'black', activeBorder: 'black', inactiveBorder: 'black' }}
+                active={true}
+                disabled={false}
+                width={80}
+                radius={25}
+                onValueChange={(val) => {
+                  setToggleValue(!toggleValue);
+                  changeMode()
+                }}
+              />
+              
+          </View>
+          <Text style={{textAlign: 'center', fontSize:17, fontWeight:'bold'}}>Friend 99</Text>
+        
       </View>
-      <Text style={styles.text}>Your UID is: {user.uid} </Text>
-      <Text>User profile: {privacy}</Text>
-      <View style={{height:170}}></View>
-      <View style={styles.coursesContainer}>
-        <Text style={{textAlign: 'center', fontWeight: 'bold', fontSize: 20, marginBottom: 10}}>2021-2022 S1</Text>
-        {selectedCourses}
+        
+        
+      
+      {/*<View style={styles.switch, {flexDirection: 'row'}}>
+        
+        <View style={styles.toggleSwitch}>
+          <ToggleSwitch
+              text={{ on: 'Public', off: 'Private', activeTextColor: 'white', inactiveTextColor: 'white' }}
+              textStyle={{ fontWeight: 'bold' }}
+              color={{ indicator: Colors.orangeButton, active: 'black', inactive: 'black', activeBorder: 'black', inactiveBorder: 'black' }}
+              active={true}
+              disabled={false}
+              width={80}
+              radius={25}
+              onValueChange={(val) => {
+                setToggleValue(!toggleValue);
+                changeMode()
+              }}
+            />
+        </View>
+            </View>*/}
+      
+      <View style={{flex:1}}>
+        <Swiper style={styles.wrapper} showsButtons={false}>
+          <View style={styles.slide1}>
+            <Text style={{textAlign: 'center', fontWeight: 'bold', fontSize: 20, marginBottom: 10}}>2021-2022 S1</Text>
+            {selectedCourses}
+          </View>
+          <View style={styles.slide2}>
+            <Text style={{textAlign: 'center', fontWeight: 'bold', fontSize: 20, marginBottom: 10}}>2021-2022 S2</Text>
+            {selectedCourses}
+          </View>
+        </Swiper>
       </View>
+      
   </ScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
+  switch: {
+    //alignItems: "flex-end",
+    justifyContent: "flex-end",
+    paddingRight: 20,
+    paddingLeft: 20
+  },
   container: {
     ...Base.base,
     paddingTop: 50,
@@ -112,11 +202,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 24
+    //marginBottom: 15,
+    paddingRight: 20,
+    paddingLeft: 20
   },
   coursesContainer: {
     justifyContent: 'center', 
     alignItems: 'center',
+  },
+  slide1: {
+    //flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    //backgroundColor: '#9DD6EB'
+  },
+  slide2: {
+    //flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    //backgroundColor: '#97CAE5'
   },
   courses: {
     height: 50, 
@@ -132,9 +236,32 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   title: {
-    ...Typography.title
+    ...Typography.title,
+    fontSize: 30,
+    paddingBottom:10
+
   },
   text: {
-    ...Typography.text
-  }
+    ...Typography.text,
+    paddingRight: 20,
+    paddingLeft: 20,
+    paddingBottom:20
+  },
+  newtext: {
+    ...Typography.text,
+    paddingRight: 20,
+    paddingLeft: 20,
+    paddingBottom:20,
+    fontWeight: 'bold', 
+    justifyContent: 'center',
+    flex:1
+  },
+  toggleSwitchContainer: {
+    //flexBasis: '35%'
+  },
+  toggleSwitch: {
+    transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }],
+    alignItems: 'center'
+  },
+  wrapper: {},
 });
