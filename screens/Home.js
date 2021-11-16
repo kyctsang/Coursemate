@@ -67,7 +67,9 @@ export const Home = ({ navigation }) => {
         console.log("NULL!!!")
         ref.set({
             UID: user.uid,
-            public: true
+            public: true,
+            sem1: {empty:'empty'},
+            sem2: {empty:'empty'}
         })
         console.log("inserted")
       }
@@ -83,7 +85,8 @@ export const Home = ({ navigation }) => {
   };
   
   if (Object.keys(courses).length==0) {
-    const ref2 = db.ref('users/'+username+'/courses')
+    const ref2 = db.ref('users/'+username+'/sem1')
+    ref2.off()
     ref2.on('value', (data) => {
       // console.log(data.val())
       if (data.val() == null){
@@ -95,6 +98,7 @@ export const Home = ({ navigation }) => {
   }
 
   const selectedCourses = Object.entries(courses).map((course, index) => {
+    // alert(course[1])
     if (course[1] == 'empty') {
       return(
         <View key={index} style={styles.courses}>
