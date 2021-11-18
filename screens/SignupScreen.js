@@ -14,6 +14,7 @@ const auth = Firebase.auth();
 const db = firebase.database();
 
 export default function SignupScreen({ navigation }) {
+  const [displayName, setdisplayName] = useState('')
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisibility, setPasswordVisibility] = useState(true);
@@ -34,7 +35,17 @@ export default function SignupScreen({ navigation }) {
 
   const onHandleSignup = async () => {
     try {
-      await auth.createUserWithEmailAndPassword(username + '@gmail.com', password);
+      await auth.createUserWithEmailAndPassword(username + '@gmail.com', password).then(
+        () => {
+          const ref = db.ref('/users/' + username)
+          ref.set({
+            displayName: displayName,
+            public: true,
+            sem1: {empty:'empty'},
+            sem2: {empty:'empty'}
+          })
+        }
+      )
     } catch (error) {
       setSignupError(true);
       setMessage(error.message)
@@ -76,6 +87,21 @@ export default function SignupScreen({ navigation }) {
         <StatusBar style='dark-content' />
         <Text style={styles.appName}>CourseMate</Text>
         <Text style={styles.title}>Create new account</Text>
+        <InputField
+          inputStyle={{
+            fontSize: 14
+          }}
+          containerStyle={{
+            backgroundColor: '#fff',
+            marginBottom: 20
+          }}
+          leftIcon='account'
+          placeholder='Enter display name'
+          autoCapitalize='none'
+          autoFocus={true}
+          value={displayName}
+          onChangeText={text => setdisplayName(text)}
+        />
         <InputField
           inputStyle={{
             fontSize: 14

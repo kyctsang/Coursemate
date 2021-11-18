@@ -7,7 +7,6 @@ import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvide
 import * as firebase from 'firebase';
 import 'firebase/database';
 import { Colors } from '../styles';
-import { off } from 'rsvp';
 
 const db = firebase.database()
 
