@@ -52,7 +52,7 @@ const SearchScreen = ({ navigation }) => {
 
     function checkFriends(username){
         var i = 0
-        var returnButton = [["Add", Colors.orangeButton, false, false], ["Undo", Colors.blackButton, true, false], ["Friend", Colors.greenButton, true, true]]
+        var returnButton = [["Add", Colors.orangeButton, false, false], ["Undo", Colors.blackButton, true, false], ["Friend", Colors.greyButton, true, true]]
         const refRequest = db.ref('users/' + currentUsername + '/requests/friends/sent/')
         refRequest.off()
         refRequest.on('value', (data) => {
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
         borderColor: Colors.border
     },
     scrollContainer: {
-        // height: '88%'
+        paddingBottom: 70
     },
     usersList: {
         display: 'flex',
@@ -181,7 +181,8 @@ const styles = StyleSheet.create({
     profilePicContainer: {
         alignItems: 'center',
         justifyContent: 'center',
-        flexGrow: 1
+        flexGrow: 1,
+        // maxWidth: 80
     },
     profilePic: {
         transform: [{ scaleX: 1.4 }, { scaleY: 1.4 }]
@@ -204,6 +205,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         flexGrow: 1,
-        paddingLeft: 10
+        paddingLeft: 10,
+        maxWidth: 80
     },
 })

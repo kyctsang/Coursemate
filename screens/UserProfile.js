@@ -61,7 +61,7 @@ export const UserProfile = ({ route, navigation }) => {
                 if(data.val().includes(userBeingSearch)){
                     disable = true
                     buttonText = "Friend"
-                    buttonColor = Colors.greenButton
+                    buttonColor = Colors.greyButton
                 }
             }
         })
