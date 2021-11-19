@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { useState } from 'react';
-import { StyleSheet, Text, View, Button as RNButton } from 'react-native';
+import { StyleSheet, Text, View, Button as RNButton, TouchableWithoutFeedback, Keyboard } from 'react-native';
 
 import { Typography, Colors, Base } from '../styles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -15,7 +15,7 @@ export default function LoginScreen({ navigation }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisibility, setPasswordVisibility] = useState(true);
-  const [rightIcon, setRightIcon] = useState('eye');
+  const [rightIcon, setRightIcon] = useState('eye-off');
   const [loginError, setLoginError] = useState('');
 
   const handlePasswordVisibility = () => {
@@ -39,66 +39,68 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar style='dark-content' />
-      <Text style={styles.appName}>CourseMate</Text>
-      <Text style={styles.title}>Login</Text>
-      <InputField
-        inputStyle={{
-          fontSize: 14
-        }}
-        containerStyle={{
-          backgroundColor: '#fff',
-          marginBottom: 20
-        }}
-        leftIcon='account'
-        placeholder='Enter username'
-        autoCapitalize='none'
-        autoFocus={true}
-        value={username}
-        onChangeText={text => setUsername(text)}
-      />
-      <InputField
-        inputStyle={{
-          fontSize: 14
-        }}
-        containerStyle={{
-          backgroundColor: '#fff',
-          marginBottom: 20
-        }}
-        leftIcon='lock'
-        placeholder='Enter password'
-        autoCapitalize='none'
-        autoCorrect={false}
-        secureTextEntry={passwordVisibility}
-        textContentType='password'
-        rightIcon={rightIcon}
-        value={password}
-        onChangeText={text => setPassword(text)}
-        handlePasswordVisibility={handlePasswordVisibility}
-      />
-      {loginError ? <ErrorMessage error={loginError} visible={true} /> : null}
-      <Button
-        onPress={onLogin}
-        backgroundColor={Colors.button1}
-        title='Login'
-        tileColor='#fff'
-        titleSize={20}
-        containerStyle={{
-          marginBottom: 12
-        }}
-      />
-      <Button
-        onPress={() => navigation.navigate('Signup')}
-        backgroundColor={Colors.button2}
-        title='Sign up for an account'
-        tileColor='#fff'
-        titleSize={16}
-        containerStyle={{
-          marginBottom: 24
-        }}
-      />
-    </View>
+    <TouchableWithoutFeedback onPress={() => { Keyboard.dismiss() }}>
+      <View style={styles.container}>
+        <StatusBar style='dark-content' />
+        <Text style={styles.appName}>CourseMate</Text>
+        <Text style={styles.title}>Login</Text>
+        <InputField
+          inputStyle={{
+            fontSize: 14
+          }}
+          containerStyle={{
+            backgroundColor: '#fff',
+            marginBottom: 20
+          }}
+          leftIcon='account'
+          placeholder='Enter username'
+          autoCapitalize='none'
+          autoFocus={true}
+          value={username}
+          onChangeText={text => setUsername(text)}
+        />
+        <InputField
+          inputStyle={{
+            fontSize: 14
+          }}
+          containerStyle={{
+            backgroundColor: '#fff',
+            marginBottom: 20
+          }}
+          leftIcon='lock'
+          placeholder='Enter password'
+          autoCapitalize='none'
+          autoCorrect={false}
+          secureTextEntry={passwordVisibility}
+          textContentType='password'
+          rightIcon={rightIcon}
+          value={password}
+          onChangeText={text => setPassword(text)}
+          handlePasswordVisibility={handlePasswordVisibility}
+        />
+        {loginError ? <ErrorMessage error={loginError} visible={true} /> : null}
+        <Button
+          onPress={onLogin}
+          backgroundColor={Colors.orangeButton}
+          title='Login'
+          tileColor='#fff'
+          titleSize={20}
+          containerStyle={{
+            marginBottom: 12
+          }}
+        />
+        <Button
+          onPress={() => navigation.navigate('Signup')}
+          backgroundColor={Colors.blackButton}
+          title='Sign up for an account'
+          tileColor='#fff'
+          titleSize={16}
+          containerStyle={{
+            marginBottom: 24
+          }}
+        />
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 

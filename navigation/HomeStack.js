@@ -56,7 +56,7 @@ export default function HomeStack() {
         }}
       />
       <Tabs.Screen
-        name="Search"
+        name="User Search"
         component={Search}
         options={{
           headerShown: false,
