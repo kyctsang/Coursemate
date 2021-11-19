@@ -1,15 +1,15 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { createStackNavigator } from '@react-navigation/stack';
 
-const ScreenContainer = ({ children }) => (
-    <View >{children}</View>
-  );
+import {GroupDetails} from "./GroupDetails";
+import {NewGroup} from "./NewGroup";
+import {AllGroups} from "./AllGroups";
 
-export const Group = ({navigation}) => {
-    return(
-        <ScreenContainer>
-            <Text>Group</Text>
-        </ScreenContainer>
-    )
-    
-}
+const Stack = createStackNavigator();
+export const Group = ({navigation}) => (
+    <Stack.Navigator initialRouteName="GroupScreen" headerMode="none">
+        <Stack.Screen name="GroupScreen" component={AllGroups} />
+        <Stack.Screen name="GroupDetails" component={GroupDetails} test = '123'/>
+        <Stack.Screen name="NewGroup" component={NewGroup} />
+    </Stack.Navigator>
+)
