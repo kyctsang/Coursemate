@@ -24,21 +24,17 @@
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-41.0.0.tar.gz",
     "react-native-gesture-handler": "~1.10.2",
+    "react-native-image-picker": "^4.3.0",
     "react-native-inset-shadow": "^1.0.3",
     "react-native-lightning-modal": "^2.0.1",
     "react-native-reanimated": "^2.2.4",
     "react-native-safe-area-context": "3.2.0",
     "react-native-screens": "~3.0.0",
-<<<<<<< HEAD
-    "react-native-swiper": "^1.6.0-rc.3",
+    "react-native-swiper": "^1.6.0",
+    "react-native-switch-toggle": "^2.2.1",
     "react-native-web": "~0.13.12",
     "rn-toggle-switch": "^1.0.2",
     "swiper": "^7.2.0"
-=======
-    "react-native-switch-toggle": "^2.2.1",
-    "react-native-web": "~0.13.12",
-    "rn-toggle-switch": "^1.0.2"
->>>>>>> af0980aa701bbcb1f476e93fc188df495853e934
   },
   "devDependencies": {
     "@babel/core": "^7.9.0"

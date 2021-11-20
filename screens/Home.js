@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useContext, useEffect, useState } from "react";
-import { View, Text, StyleSheet, Button, Switch} from "react-native";
+import React, {useContext, useEffect, useState } from "react";
+import { View, Text, StyleSheet, Button, Switch, Image, TouchableOpacity, Linking} from "react-native";
 
 import { Typography, Colors, Base } from '../styles';
 import InsetShadow from 'react-native-inset-shadow'
@@ -13,6 +13,9 @@ import 'firebase/database';
 import ToggleSwitch from 'rn-toggle-switch'
 import Swiper from 'react-native-swiper'
 
+import { launchImageLibrary } from 'react-native-image-picker';
+
+
 //import { Tab } from 'react-native-elements';
 //import { NavigationContainer } from '@react-navigation/native';
 //import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -22,6 +25,7 @@ const db = firebase.database();
 
 
 const ScreenContainer = ({ children }) => (
+  
   <View style={styles.container}>{children}</View>
 );
 
@@ -29,10 +33,26 @@ export const Home = ({ navigation }) => {
   const [privacy, setPrivacy] = useState('public')
   //const [mode, setMode] = useState({})
   const { user } = useContext(AuthenticatedUserContext);
-  const [courses, setCourses] = useState({})
+  const [coursesOne, setCoursesOne] = useState({})
+  const [coursesTwo, setCoursesTwo] = useState({})
 
   const username = user.email.substring(0,user.email.length-10)
-  const [toggleValue, setToggleValue] = useState(true);
+  const [toggleValue, setToggleValue] = useState();
+  const [friendsNumber, setFriendsNumber] = useState();
+  //const [image, setImage] = useState(null);
+  //const addImage=()=>{};
+
+  
+
+  
+  var ref = db.ref('users/' + username +'/friends');
+  ref.once('value')
+    .then(function(snapshot){
+      var a = snapshot.numChildren();
+      setFriendsNumber(a);
+  });
+  console.log('wtt'+friendsNumber);
+
   function changeMode() {
     const ref = db.ref('users/' + username)
     ref.off()
@@ -41,12 +61,12 @@ export const Home = ({ navigation }) => {
         console.log("not NULL!!!")
         if (toggleValue) {
             setPrivacy('private')
-            ref.set({
+            ref.update({
                 public: false
             })
         } else {
             setPrivacy('public')
-            ref.set({
+            ref.update({
                 public: true
             })
         }
@@ -55,6 +75,7 @@ export const Home = ({ navigation }) => {
     })
       
   }
+  
 
   useEffect(() => {
     // const username = user.email.substring(0,user.email.length-10)
@@ -71,8 +92,13 @@ export const Home = ({ navigation }) => {
             sem1: {empty:'empty'},
             sem2: {empty:'empty'}
         })
+        setToggleValue(true)
         console.log("inserted")
+      }else{
+        console.log("PUBLIX:" + data.val().public)
+        setToggleValue(data.val().public)
       }
+      
     })
   }, []);
 
@@ -84,20 +110,35 @@ export const Home = ({ navigation }) => {
     }
   };
   
-  if (Object.keys(courses).length==0) {
+  if (Object.keys(coursesOne).length==0) {
     const ref2 = db.ref('users/'+username+'/sem1')
     ref2.off()
     ref2.on('value', (data) => {
       // console.log(data.val())
       if (data.val() == null){
-        setCourses({courses: 'empty'})
+        setCoursesOne({coursesOne: 'empty'})
       }else{
-        setCourses(data.val())
+        setCoursesOne(data.val())
       }
     })
   }
 
-  const selectedCourses = Object.entries(courses).map((course, index) => {
+  if (Object.keys(coursesTwo).length==0) {
+    const ref2 = db.ref('users/'+username+'/sem2')
+    ref2.off()
+    ref2.on('value', (data) => {
+      // console.log(data.val())
+      if (data.val() == null){
+        setCoursesTwo({coursesTwo: 'empty'})
+        
+      }else{
+        setCoursesTwo(data.val())
+      }
+    })
+  }
+
+
+  const selectedCoursesOne = Object.entries(coursesOne).map((course, index) => {
     // alert(course[1])
     if (course[1] == 'empty') {
       return(
@@ -108,7 +149,24 @@ export const Home = ({ navigation }) => {
     }
     console.log(course[0] + " " + course[1])
     return(
-      <View key={index} style={styles.courses}>
+      <View key={index} style={styles.havecourses}>
+          <Text style={styles.courseTitle}>{course[0]} {course[1]}</Text>
+      </View>
+    )
+  })
+
+  const selectedCoursesTwo = Object.entries(coursesTwo).map((course, index) => {
+    // alert(course[1])
+    if (course[1] == 'empty') {
+      return(
+        <View key={index} style={styles.courses}>
+          <Text style={styles.courseTitle}>No saved course yet!</Text>
+        </View>
+      )
+    }
+    console.log(course[0] + " " + course[1])
+    return(
+      <View key={index} style={styles.havecourses}>
           <Text style={styles.courseTitle}>{course[0]} {course[1]}</Text>
       </View>
     )
@@ -117,38 +175,70 @@ export const Home = ({ navigation }) => {
   var tempmode = privacy;
   tempmode = tempmode.charAt(0).toUpperCase() + tempmode.slice(1);
   const [isEnabled, setIsEnabled] = useState(false);
-  const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+  console.log('hiii'+toggleValue);
+  var test = toggleValue;
+  console.log('test'+test);
+  
+    
   return (
   <ScreenContainer>
     <StatusBar style='dark-content' />
       <View style={styles.row, {flexDirection: 'column'},{justifyContent: 'center',
     alignItems: 'center', paddingBottom:10}}>
-        <View style={{flexDirection: 'row'}}>
-        <Text style={styles.title}>{user.email.substring(0,user.email.length-10)} </Text>
-        <IconButton
-          name='logout'
-          size={20}
-          color='#000'
-          onPress={handleSignOut}
-        />
-        </View>
-          <View style={styles.toggleSwitch}>
-            <ToggleSwitch
-                text={{ on: 'Public', off: 'Private', activeTextColor: 'white', inactiveTextColor: 'white' }}
-                textStyle={{ fontWeight: 'bold',fontSize:17 }}
-                color={{ indicator: Colors.orangeButton, active: 'black', inactive: 'black', activeBorder: 'black', inactiveBorder: 'black' }}
-                active={true}
-                disabled={false}
-                width={80}
-                radius={25}
-                onValueChange={(val) => {
-                  setToggleValue(!toggleValue);
-                  changeMode()
-                }}
-              />
+      <View style={{paddingBottom:0}}>
+        {/* clickable function is not working*/}
+        <TouchableOpacity onPress={Linking}>
+          <Image
+            style={styles.tinyLogo}
+            source={{
+              uri: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
               
-          </View>
-          <Text style={{textAlign: 'center', fontSize:17, fontWeight:'bold'}}>Friend 99</Text>
+            }}
+          />
+        </TouchableOpacity>
+        </View>
+        <View style={styles.toggleSwitch}>
+              <ToggleSwitch
+                  text={{ on: 'Public', off: 'Private', activeTextColor: 'white', inactiveTextColor: 'white' }}
+                  textStyle={{ fontWeight: 'bold',fontSize:20 }}
+                  color={{ indicator: Colors.orangeButton, active: 'black', inactive: 'black', activeBorder: 'black', inactiveBorder: 'black' }}
+                  active={test}
+                  disabled={false}
+                  width={80}
+                  radius={25}
+                  onValueChange={(val) => {
+                    setToggleValue(!toggleValue);
+                    changeMode()
+                  }}
+                />
+              </View>
+        
+        
+        
+          <View style={{flexDirection: 'row', alignItems:'center'} }>
+            <View style={{flexDirection: 'row', paddingBottom: 10}}>
+              
+            
+              <Text style={styles.title}>{user.email.substring(0,user.email.length-10)} </Text>
+              <IconButton
+                name='logout'
+                size={15}
+                color='#000'
+                onPress={handleSignOut}
+              />
+            
+            </View>
+            <View style={{width: 100}}></View>
+            <View style={{flexDirection: 'column'} }>
+
+              <Text style={{textAlign: 'center', fontSize:17, fontWeight:'bold', paddingLeft:30}}>{friendsNumber}</Text>
+              <Text style={{textAlign: 'center', fontSize:17,  paddingLeft:30}}>Friends</Text>
+            </View>
+            
+            
+        </View>
+        
+          
         
       </View>
         
@@ -176,12 +266,16 @@ export const Home = ({ navigation }) => {
       <View style={{flex:1}}>
         <Swiper style={styles.wrapper} showsButtons={false}>
           <View style={styles.slide1}>
-            <Text style={{textAlign: 'center', fontWeight: 'bold', fontSize: 20, marginBottom: 10}}>2021-2022 S1</Text>
-            {selectedCourses}
+            <Text style={{textAlign: 'center', fontWeight: 'bold', fontSize: 20, marginBottom: 10}}>2021-2022 Sem 1</Text>
+            <View style={{flexDirection:'row', flexWrap:'wrap', justifyContent:'center'}}>
+              {selectedCoursesOne}
+            </View>
           </View>
           <View style={styles.slide2}>
-            <Text style={{textAlign: 'center', fontWeight: 'bold', fontSize: 20, marginBottom: 10}}>2021-2022 S2</Text>
-            {selectedCourses}
+            <Text style={{textAlign: 'center', fontWeight: 'bold', fontSize: 20, marginBottom: 10}}>2021-2022 Sem 2</Text>
+            <View style={{flexDirection:'row', flexWrap:'wrap', justifyContent:'center'}}>
+              {selectedCoursesTwo}
+            </View>
           </View>
         </Swiper>
       </View>
@@ -199,7 +293,7 @@ const styles = StyleSheet.create({
   },
   container: {
     ...Base.base,
-    paddingTop: 50,
+    paddingTop: 20,
     paddingHorizontal: 12
   },
   row: {
@@ -233,7 +327,16 @@ const styles = StyleSheet.create({
     margin: 3, 
     width:'80%',
     justifyContent: 'center',
-    backgroundColor: '#fcba03'
+    backgroundColor: '#f57c00'
+  },
+  havecourses: {
+    height: 50, 
+    borderWidth: 3, 
+    borderRadius: 5, 
+    margin: 3, 
+    width:'40%',
+    justifyContent: 'center',
+    backgroundColor: '#f57c00'
   },
   courseTitle: {
     fontWeight: 'bold', 
@@ -241,8 +344,9 @@ const styles = StyleSheet.create({
   },
   title: {
     ...Typography.title,
-    fontSize: 30,
-    paddingBottom:10
+    fontSize: 23,
+    paddingBottom:3,
+    paddingTop:3
 
   },
   text: {
@@ -264,8 +368,14 @@ const styles = StyleSheet.create({
     //flexBasis: '35%'
   },
   toggleSwitch: {
-    transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }],
-    alignItems: 'center'
+    transform: [{ scaleX: 0.65 }, { scaleY: 0.65 }],
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end'
   },
   wrapper: {},
+  tinyLogo: {
+    width: 100,
+    height: 100,
+    borderRadius: 20
+  },
 });

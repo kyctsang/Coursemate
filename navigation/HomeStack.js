@@ -12,9 +12,9 @@ import { Search } from '../screens/Search';
 import { Notifications } from '../screens/Notifications';
 
 
+
 const Stack = createStackNavigator();
 const Tabs = createBottomTabNavigator();
-
 
 
 export default function HomeStack() {
