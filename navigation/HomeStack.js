@@ -18,6 +18,7 @@ const Tabs = createBottomTabNavigator();
 
 
 export default function HomeStack() {
+
   return (
     <Tabs.Navigator
       initialRouteName="Home"
@@ -58,6 +59,7 @@ export default function HomeStack() {
       <Tabs.Screen
         name="User Search"
         component={Search}
+        initialParams={{ addMember: false, groupId: "" }}
         options={{
           headerShown: false,
           tabBarLabel: 'Search',

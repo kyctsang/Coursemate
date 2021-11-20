@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState} from 'react';
 
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
 import * as firebase from 'firebase';
-import {ScrollView, StyleSheet, Text, TouchableHighlight, View, Picker, Pressable} from "react-native";
+import {ScrollView, StyleSheet, Text, TouchableHighlight, View, Picker, Pressable, Alert} from "react-native";
 import { RadioButton } from 'react-native-paper';
 import {Button} from "../components";
 import {Colors} from "../styles";
@@ -33,24 +33,25 @@ export const MeetingTime = ({ navigation, route }) => {
         "6:30pm - 7:30pm",
         "7:30pm - 8:30pm"]
 
+    const TIMESLOTS_HOURS_DIFF = 7;
+
     const [meetingDay, setMeetingDay] = useState("Monday");
-    const [meetingLength, setMeetingLength] = useState(1);
-    const [timeslots, setTimeslots] = useState(allTimeslots);
+    const [meetingLength, setMeetingLength] = useState("1");
+    const [meetingTimeslots, setMeetingTimeslots] = useState(allTimeslots);
 
-    const [members, setMembers] = useState([]);
-    const [tempCourseStudied, setTempCourseStudied] = useState({});
-    const [unavailableTimeslots, setUnavailableTimeslots] = useState([]);
+    const [groupMembers, setGroupMembers] = useState([]);
+    const [membersCourses, setMembersCourses] = useState([]);
+    const [coursesTimeslots, setCoursesTimeslots] = useState([]);
 
-    const [checked, setChecked] = useState('');
-    const [confirmEnabled, setConfirmEnabled] = useState(true);
+    const [checked, setChecked] = useState("");
 
-    const timeList = Object.entries(timeslots).map(([index, time]) => {
+    const timeList = Object.entries(meetingTimeslots).map(([idx, time]) => {
         return (
             <View style={styles.item}
                   key={time}>
                 <RadioButton
                     value={time}
-                    status={ checked === time ? 'checked' : 'unchecked' }
+                    status={ checked === time ? "checked" : "unchecked" }
                     onPress={() => setChecked(time)}
                 />
                 <TouchableHighlight>
@@ -60,117 +61,115 @@ export const MeetingTime = ({ navigation, route }) => {
         )
     });
 
-    async function addCourseTime(courseName, subClass) {
-        let courseRef = db.ref(`courses/sem1/${courseName}/section/${subClass}`)
-        await courseRef.once('value')
-            .then(snapshot => {
-                if (snapshot) {
-                    let tempList = snapshot.val();
-                    let matchingList = []
-                    for (let dayTime of tempList) {
-                        if (dayTime.charAt(0) === (allDays.indexOf(meetingDay) + 1).toString() ) {
-                            let timeList = dayTime.split("-")
 
-                            matchingList.push(parseInt(timeList[1]));
+    useEffect(() => {
+        try {
+            // get this group members list
+            groupMembersRef.once('value')
+                .then(snapshot => {
+                    setGroupMembers(snapshot.val());
+                });
+        } catch(error) {
+            console.log(`Error: ${error.stackTrace}`)
+        }
+    }, [meetingDay, meetingLength]);
+
+    useEffect(() => {
+        try {
+            // get all of the members' courseList
+            db.ref('users').once('value')
+                .then(snapshot => {
+                    return snapshot.exportVal();
+                }).then(users => {
+                    let allCourses = [];
+                    for (let groupMember of groupMembers) {
+                        if (users[groupMember]["sem1"]["empty"] !== "empty")
+                            allCourses.push(users[groupMember]['sem1']);
+                    }
+                    setMembersCourses(allCourses);
+                });
+        } catch(error) {
+            console.log(`Error: ${error.stackTrace}`)
+        }
+    }, [groupMembers]);
+
+    useEffect(() => {
+        try {
+            // get all of the courses' timeslots
+            db.ref('courses/sem1').once('value')
+                .then(snapshot => {
+                    return snapshot.exportVal();
+                }).then(allSemCourses => {
+                    let membersCoursesTimeslots = []
+                    for (let coursesObj of membersCourses) {
+                        for (const [title, subClass] of Object.entries(coursesObj)) {
+                            for (const [idx, time] of Object.entries(allSemCourses[title]['section'][subClass])) {
+                                membersCoursesTimeslots.push(time);
+                            }
                         }
                     }
-                    setUnavailableTimeslots(unavailableTimeslots.concat(matchingList));
-                    console.log(`tempList added: ${matchingList} to ${unavailableTimeslots}`)
-                }
-            }).catch(error => {console.log(`Error: ${error}`)});
-    }
-
-    useEffect(() => {
-        fetchMembers().then();
-    }, [meetingDay, meetingLength])
-
-    useEffect(() => {
-        setUnavailableTimeslots([]);
-        for (let member of members) {
-            let userCoursesRef = db.ref(`users/${member}/sem1`);
-            userCoursesRef.once('value')
-                .then(userCourses => {1
-                    if (userCourses) {
-                        console.log(userCourses.exportVal());
-                        setTempCourseStudied(userCourses.exportVal());
-                    }
-                }).catch(error => {console.log(`Error: ${error}`)});
-        }
-    }, [members])
-
-    useEffect(() => {
-        if (tempCourseStudied) {
-            for (let key in tempCourseStudied) {
-                console.log(`course name is ${key}`);
-                addCourseTime(key, tempCourseStudied[key])
-                    .catch(error => {console.log(`Error: ${error}`)});
-            }
-        }
-    }, [tempCourseStudied])
-
-    useEffect(() => {
-        let allTimeslotsIdx = [0,1,2,3,4,5,6,7,8,9,10,11]
-        let differences = allTimeslotsIdx.filter(x => !unavailableTimeslots.includes(x))
-        let finalTimeslots = []
-        for (let difference of differences) {
-            finalTimeslots.push(allTimeslots[difference])
-        }
-        console.log(`final timeslots are ${finalTimeslots}`)
-        setTimeslots(finalTimeslots);
-    }, [unavailableTimeslots])
-
-    async function fetchMembers() {
-        console.log(`Meeting Day is ${meetingDay}`)
-        groupMembersRef.once('value')
-            .then(groupMembers => {
-                setMembers(groupMembers.val())
+                    setCoursesTimeslots(membersCoursesTimeslots);
+                    console.log(membersCoursesTimeslots);
             });
-        // await groupMembersRef.once('value')
-        //     .then(async groupMembers => {
-        //         for (let member of groupMembers.val()) {
-        //             console.log(`Username is ${member}`);
-        //             let userCoursesRef = db.ref(`users/${member}/sem1`)
-        //             await userCoursesRef.once('value')
-        //                 .then(userCourses => {
-        //                     if (userCourses) {
-        //                         console.log(userCourses.exportVal())
-        //                         setTempCourseStudied(userCourses.exportVal());
-        //                     }
-        //                 }).catch(error => {console.log(`Error: ${error}`)});
-        //             if (tempCourseStudied) {
-        //                 for (let key in tempCourseStudied) {
-        //                     console.log(`course name is ${key}`);
-        //                     await addCourseTime(key, tempCourseStudied[key])
-        //                         .catch(error => {console.log(`Error: ${error}`)});
-        //                 }
-        //             }
-        //         }
-        //     });
-        //
-        // await filterUnavailableTime(day)
-    }
+        } catch(error) {
+            console.log(`Error: ${error.stackTrace}`)
+        }
+    }, [membersCourses]);
 
-    function filterUnavailableTime(day) {
-        let dayUnavailableTime = [];
-        let dayAvailableTimeslots = [];
-        console.log(`Unavailable timeslots are ${unavailableTimeslots}`);
-        for (let unavailableTimeslot of unavailableTimeslots) {
-            console.log(`Unavailable timeslot is ${unavailableTimeslot}`)
-            if (parseInt(unavailableTimeslot[0]) === allDays.indexOf(day) + 1) {
-                console.log(`temp day idx now is ${day}`)
-                dayUnavailableTime.push(parseInt(unavailableTimeslot.split("-").pop()));
+    /* useEffect on [meetingDay]
+    get available timeslot on that day
+     */
+    useEffect(() => {
+        let dayIdx = allDays.indexOf(meetingDay) + 1; // 1 to 5
+        let meetingDayUnavailableTimeslots = [];
+        for (let dayTime of coursesTimeslots) {
+            if (dayTime.charAt(0) === dayIdx.toString()) {
+                meetingDayUnavailableTimeslots.push(parseInt(dayTime.split("-")[1]))
             }
         }
-        console.log(`dayUnavailable time is : ${dayUnavailableTime}`);
-        for (let i = allTimeslots.length; i >= 0; i--) {
-            if (dayUnavailableTime.indexOf(i) === -1) {
-                dayAvailableTimeslots.push(allTimeslots[i]);
+        // generate available start time
+        let availableStartTimeslots = [];
+        for (let i = 1; i < 14 - parseInt(meetingLength); i++) {
+            if (meetingDayUnavailableTimeslots.indexOf(i) === -1) {
+                let comingMeetingLengthFree = true
+                for (let j = i + 1; j < i + parseInt(meetingLength); j++) {
+                    if (meetingDayUnavailableTimeslots.indexOf(j) !== -1) {
+                        comingMeetingLengthFree = false;
+                        break;
+                    }
+                }
+                if (comingMeetingLengthFree) { availableStartTimeslots.push(i); }
             }
         }
-        dayUnavailableTime.splice(dayAvailableTimeslots.indexOf(null));
-        dayUnavailableTime.reverse();
-        setTimeslots(dayAvailableTimeslots);
-        console.log(dayAvailableTimeslots);
+        let timeslots = [];
+        for (let time of availableStartTimeslots) {
+            let startTimePM = (time + TIMESLOTS_HOURS_DIFF) > 12;
+            let startTime = startTimePM ? (time + TIMESLOTS_HOURS_DIFF) % 12 : time + TIMESLOTS_HOURS_DIFF;
+            let endTimePM = (time + parseInt(meetingLength) + TIMESLOTS_HOURS_DIFF) > 12;
+            let endTime = endTimePM ? (time + parseInt(meetingLength) + TIMESLOTS_HOURS_DIFF) % 12 : time + parseInt(meetingLength) + TIMESLOTS_HOURS_DIFF;
+            timeslots.push(`${startTime}:30${startTimePM || startTime === 12 ? "PM" : "AM"} - ${endTime}:30${endTimePM || endTime === 12 ? "PM" : "AM"}`)
+        }
+        setMeetingTimeslots(timeslots);
+        {
+            /* DEBUG */
+            // console.log(meetingDayUnavailableTimeslots);
+            // console.log(availableStartTimeslots);
+            // console.log(timeslots);
+        }
+
+    }, [meetingDay, meetingLength]);
+
+    function handleConfirmTimeslot(time) {
+        console.log(time);
+        if (time === "" || time === undefined ) {
+            Alert.alert("Please select a timeslot.");
+            return;
+        }
+        const updates = {};
+        updates["meetingTime"] = meetingDay + " " + time;
+        groupRef.update(updates);
+        Alert.alert(`Next meeting is set on ${meetingDay + " " + time}.`);
+        navigation.navigate("GroupDetails", {groupId: groupId});
     }
 
     return (
@@ -181,7 +180,7 @@ export const MeetingTime = ({ navigation, route }) => {
                 <Text style={[styles.subHeading, styles.h4]}>Meeting Day</Text>
                 <Picker style={styles.picker}
                         selectedValue ={meetingDay}
-                        onValueChange={async (itemValue) => {setMeetingDay(itemValue)}}>
+                        onValueChange={day => {setMeetingDay(day)}}>
                     <Picker.Item label="Monday" value="Monday" />
                     <Picker.Item label="Tuesday" value="Tuesday" />
                     <Picker.Item label="Wednesday" value="Wednesday" />
@@ -192,7 +191,7 @@ export const MeetingTime = ({ navigation, route }) => {
                 <Text style={[styles.subHeading, styles.h4]}>Meeting Length</Text>
                 <Picker style={styles.picker}
                     selectedValue ={meetingLength}
-                    onValueChange={(itemValue) => setMeetingLength(itemValue)}>
+                    onValueChange={length => {setMeetingLength(length)}}>
                     <Picker.Item label="1 hour" value="1" />
                     <Picker.Item label="2 hours" value="2" />
                     <Picker.Item label="3 hours" value="3" />
@@ -203,12 +202,12 @@ export const MeetingTime = ({ navigation, route }) => {
                     <Picker.Item label="8 hours" value="8" />
                 </Picker>
                 <Text style={[styles.subHeading, styles.h4]}>Suggested Meeting Time</Text>
-                {timeslots.length === 0 ? <Text style={[styles.heading, styles.h2]}>Group members are busy today!</Text> : <Text />}
+                {meetingTimeslots.length === 0 ? <Text style={[styles.heading, styles.h2, {color: 'orange'}]}>Group members are busy today!</Text> : <Text />}
                 {timeList}
             </ScrollView>
-            <Pressable style={ timeslots.length ? styles.button : styles.disabledButton}
-                       disabled={timeslots.length}
-                       onPress={() => console.log('pressed1')}>
+            <Pressable style={ meetingTimeslots.length ? styles.button : styles.disabledButton}
+                       disabled={!meetingTimeslots.length}
+                       onPress={() => handleConfirmTimeslot(checked)}>
                 <Text style={{color: 'white'}}>Confirm Meeting Time</Text>
             </Pressable>
         </View>
@@ -229,15 +228,15 @@ const styles = StyleSheet.create({
     },
     h1: {
         fontSize: 28,
-        marginBottom: 10
+        marginVertical: 10
     },
     h2: {
         fontSize: 20,
-        marginBottom: 10
+        marginVertical: 10
     },
     h3: {
         fontSize: 14,
-        marginBottom: 10
+        marginVertical: 10
     },
     h4: {
         fontSize: 14

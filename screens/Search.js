@@ -22,8 +22,16 @@ const ScreenContainer = ({ children }) => (
 );
 
 export const SearchScreen = ({ navigation, route }) => {
-    const {addMember, groupId} = route.params;
-    console.log(addMember);
+    let addMember;
+    let groupId;
+    if (route.params === undefined) {
+        addMember = false;
+        groupId = ""
+    }
+    else {
+        addMember = route.params.addMember;
+        groupId = route.params.groupId;
+    }
 
     const db = firebase.database()
     const auth = Firebase.auth()

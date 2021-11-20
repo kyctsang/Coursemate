@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {Pressable, ScrollView, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View} from "react-native";
+import {Alert, Pressable, ScrollView, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View} from "react-native";
 
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
 import * as firebase from 'firebase';
@@ -20,18 +20,51 @@ export const GroupDetails = ({ navigation, route }) => {
     const [members, setMembers] = useState({});
     const [meetingTime, setMeetingTime] = useState(null);
 
-    // groupMembersRef.once("value")
-    //     .then(data => {
-    //     setMembers(data.val());
-    //     console.log(data.val());
-    // });
-
     useEffect(() => {
-        groupMembersRef.on('value', data => {
-            setMembers(data.val());
-            console.log(data.val())
-        });
+        try {
+            groupMembersRef.on('value', data => {
+                setMembers(data.val());
+                console.log(data.val())
+            });
+            groupRef.on('value', snapshot => {
+                if ("meetingTime" in snapshot.exportVal()) {
+                    setMeetingTime("Regular Meeting: " + snapshot.exportVal()["meetingTime"]);
+                }
+            });
+        } catch (error) {
+            console.log(`Error: ${error.stackTrace}`);
+        }
     }, []);
+
+    function deleteMember(target) {
+        const updates = {};
+        let tempMembers = members;
+        for (const [key, user] of Object.entries(tempMembers)) {
+            if (user === target) {
+                delete tempMembers[key];
+                break;
+            }
+        }
+        updates["members"] = tempMembers;
+        groupRef.update(updates);
+
+        db.ref(`users/${target}/groups`).once('value')
+            .then(snapshot => {
+                return snapshot.val();
+            }).then(userGroups => {
+                for (let group of userGroups) {
+                    if (group["id"] === groupId) {
+                        let idx = userGroups.indexOf(group)
+                        userGroups.splice(idx, 1);
+                    }
+                }
+                const updates = {};
+                updates["groups"] = userGroups
+            userRef.update(updates);
+        })
+
+        Alert.alert(`${target} has been removed.`);
+    }
 
     async function deleteGroup(id) {
 
@@ -45,6 +78,7 @@ export const GroupDetails = ({ navigation, route }) => {
                     <Text style={styles.username}>{username}</Text>
                 </TouchableHighlight>
                 <Button
+                    onPress={() => deleteMember(username)}
                     backgroundColor={Colors.redButton}
                     title="Remove"
                     titleColor="#fff"
@@ -81,13 +115,14 @@ export const GroupDetails = ({ navigation, route }) => {
 
 const styles = StyleSheet.create({
     heading: {
-        color: '#111',
+        color: "#2B2D2F",
         fontWeight: 'bold',
         textAlign: 'center',
     },
     h1: {
         fontSize: 28,
-        // margin: 10
+        marginTop: 10,
+        marginLeft: 10
     },
     h2: {
         fontSize: 20,
@@ -95,7 +130,7 @@ const styles = StyleSheet.create({
     },
     h3: {
         fontSize: 14,
-        margin: 10
+        marginLeft: 10
     },
     button: {
         alignItems: 'center',
@@ -134,7 +169,7 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'column',
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         height: '100%',
         backgroundColor: 'white',
         padding: 20
