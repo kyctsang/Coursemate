@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {useContext, useEffect, useState } from "react";
-import { View, Text, StyleSheet, Button, Switch, Image, TouchableOpacity, Linking} from "react-native";
+import { View, Text, StyleSheet, Switch, Image, TouchableOpacity, Linking} from "react-native";
+import { Button } from '../components';
 
 import { Typography, Colors, Base } from '../styles';
 import InsetShadow from 'react-native-inset-shadow'
@@ -197,35 +198,40 @@ export const Home = ({ navigation }) => {
           />
         </TouchableOpacity>
         </View>
-        <View style={styles.toggleSwitch}>
-              <ToggleSwitch
-                  text={{ on: 'Public', off: 'Private', activeTextColor: 'white', inactiveTextColor: 'white' }}
-                  textStyle={{ fontWeight: 'bold',fontSize:20 }}
-                  color={{ indicator: Colors.orangeButton, active: 'black', inactive: 'black', activeBorder: 'black', inactiveBorder: 'black' }}
-                  active={test}
-                  disabled={false}
-                  width={80}
-                  radius={25}
-                  onValueChange={(val) => {
-                    setToggleValue(!toggleValue);
-                    changeMode()
-                  }}
-                />
+        <View style={{flexDirection:'column', justifyContent:'center'}}>
+          <View style={styles.toggleSwitch}>
+                <ToggleSwitch
+                    text={{ on: 'Public', off: 'Private', activeTextColor: 'white', inactiveTextColor: 'white' }}
+                    textStyle={{ fontWeight: 'bold',fontSize:20 }}
+                    color={{ indicator: Colors.orangeButton, active: 'black', inactive: 'black', activeBorder: 'black', inactiveBorder: 'black' }}
+                    active={test}
+                    disabled={false}
+                    width={80}
+                    radius={25}
+                    onValueChange={(val) => {
+                      setToggleValue(!toggleValue);
+                      changeMode()
+                    }}
+                  />
+                
               </View>
+                <View style={styles.button}>
+                  <Button
+                          onPress={handleSignOut}
+                          backgroundColor={Colors.orangeButton}
+                          title='Sign Out'
+                          tileColor='fff'
+                          titleSize={20}
+                      />
+                  </View>
         
-        
-        
+          </View>
           <View style={{flexDirection: 'row', alignItems:'center'} }>
             <View style={{flexDirection: 'row', paddingBottom: 10}}>
               
             
               <Text style={styles.title}>{user.email.substring(0,user.email.length-10)} </Text>
-              <IconButton
-                name='logout'
-                size={15}
-                color='#000'
-                onPress={handleSignOut}
-              />
+              
             
             </View>
             <View style={{width: 100}}></View>
@@ -370,12 +376,17 @@ const styles = StyleSheet.create({
   toggleSwitch: {
     transform: [{ scaleX: 0.65 }, { scaleY: 0.65 }],
     alignItems: 'flex-end',
-    justifyContent: 'flex-end'
+    justifyContent: 'flex-end',
   },
   wrapper: {},
   tinyLogo: {
     width: 100,
     height: 100,
     borderRadius: 20
+  },
+  button: {
+   justifyContent:'center',
+   alignSelf: 'stretch',
+   transform: [{ scaleX: 0.65 }, { scaleY: 0.65 }],
   },
 });
