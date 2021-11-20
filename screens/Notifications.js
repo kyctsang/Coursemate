@@ -1,43 +1,57 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
 import { Button } from '../components';
 import { Avatar } from 'react-native-elements';
+import { Typography, Colors, Base } from '../styles';
 
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
 import * as firebase from 'firebase';
 import 'firebase/database';
-import { Colors } from '../styles';
+import { color } from 'react-native-reanimated';
+import { render } from 'react-dom';
 
 const db = firebase.database()
 
 const ScreenContainer = ({ children }) => (
-    <View >{children}</View>
-  );
+    <View style={styles.container}>{children}</View>
+);
 
-export const Notifications = ({navigation}) => {
+export const Notifications = ({ navigation }) => {
     const [friendRequests, setFriendRequests] = useState([])
     const { user } = useContext(AuthenticatedUserContext);
     const currentUsername = user.email.substring(0, user.email.length - 10)
+    const [status, setStatus] = useState('Friend')
+    const setStatusFilter = s => {
+        setStatus(s)
+    }
+    const listTab = [
+        {
+            status: 'Friend'
+        },
+        {
+            status: 'Group'
+        }
+    ]
 
     useEffect(() => {
         const ref = db.ref('users/' + currentUsername + "/requests/friends/received")
         ref.off()
         ref.on('value', (data) => {
-            if (data.val() != null){
+            if (data.val() != null) {
                 setFriendRequests(data.val())
             }
         })
     }, [])
 
-    function handleRequests(element, status){
+    function handleRequests(element, status) {
         for (let i = 0; i < 2; i++) {
             let source, target, path
-            if (i == 0){
-                source = currentUsername 
+            if (i == 0) {
+                source = currentUsername
                 path = "/requests/friends/received"
                 target = element
-            } else{
-                source = element 
+            } else {
+                source = element
                 path = "/requests/friends/sent"
                 target = currentUsername
             }
@@ -45,10 +59,10 @@ export const Notifications = ({navigation}) => {
             ref.off()
             var temp = []
             ref.on('value', (data) => {
-                if(data.val() != null) {
+                if (data.val() != null) {
                     temp = data.val()
                     var index = temp.indexOf(target)
-                    if (index > -1){
+                    if (index > -1) {
                         temp.splice(index, 1)
                     }
                 }
@@ -64,34 +78,34 @@ export const Notifications = ({navigation}) => {
                 })
             }
 
-            if (status){
+            if (status) {
                 console.log("Added " + element)
                 const ref2 = db.ref('users/' + source + "/friends")
                 ref2.off()
                 var temp2 = []
                 ref2.on('value', (data) => {
-                    if (data.val() != null){
+                    if (data.val() != null) {
                         temp2 = data.val()
                     }
                 })
-                if(!temp2.includes(target)){
+                if (!temp2.includes(target)) {
                     temp2.push(target)
                 }
                 ref2.parent.update({
                     'friends': temp2
                 })
-    
-            }else{
+
+            } else {
                 console.log("Rejected " + element)
             }
         }
-        
+
     }
 
     const friendsRequestsList = friendRequests.map((element, index) => {
         console.log(element)
         console.log(index)
-        return(
+        return (
             <View key={index} style={styles.noti}>
                 <View style={styles.profilePicContainer}>
                     <View style={styles.profilePic}>
@@ -101,39 +115,68 @@ export const Notifications = ({navigation}) => {
                         />
                     </View>
                 </View>
-                <Text>{element} </Text>
-                <Button 
-                    title='Accept'
-                    width='20%'
-                    backgroundColor={Colors.orangeButton}
-                    onPress={() => {handleRequests(element, true)}}
-                />
-                <Button 
-                    title='Reject'
-                    width='20%'
-                    backgroundColor={Colors.blackButton}
-                    onPress={() => {handleRequests(element, false)}}
-                />
+                <View style={styles.usersInfo}>
+                    <Text style={styles.firstLastName}>{'First Last'}</Text>
+                    <Text style={styles.userName}>{'@' + element}</Text>
+                </View>
+                <View style={styles.button}>
+                    <Button
+                        title='Accept'
+                        tileColor='#fff'
+                        titleSize={14}
+                        backgroundColor={Colors.orangeButton}
+                        onPress={() => { handleRequests(element, true) }}
+                    />
+                </View>
+                <View style={styles.button}>
+                    <Button
+                        title='Reject'
+                        tileColor='#fff'
+                        titleSize={14}
+                        backgroundColor={Colors.blackButton}
+                        onPress={() => { handleRequests(element, false) }}
+                    />
+                </View>
             </View>
         )
     })
-    return(
+
+    function renderList() {
+        console.log(status)
+        return status === 'Friend' ? friendsRequestsList : friendsRequestsList // Change to groupRe
+    }
+
+    return (
         <ScreenContainer>
-            <View style={styles.notiContainer}>
-                <Text style={{fontSize: 26}}>Groups</Text>
-                <View>
-                    {/* similar to friends, but do after group is done */}
+            <SafeAreaView>
+                <View style={styles.listTab}>
+                    {
+                        listTab.map(e => (
+                            <TouchableOpacity
+                                key={e.status}
+                                style={[styles.btnTab, status === e.status && styles.btnTabActive]}
+                                onPress={() => setStatusFilter(e.status)}
+                            >
+                                <Text
+                                    style={[styles.textTab, status === e.status && styles.textTabActive]}
+                                >
+                                    {e.status}
+                                </Text>
+                            </TouchableOpacity>))
+                    }
                 </View>
-            </View>
-            <View style={styles.notiContainer}>
-                <Text style={{fontSize: 26}}>Friends</Text>
-                {friendsRequestsList}
-            </View>
+                <View style={styles.notiContainer}>
+                    {renderList()}
+                </View>
+            </SafeAreaView>
         </ScreenContainer>
     )
-} 
+}
 
 const styles = StyleSheet.create({
+    container: {
+        ...Base.page
+    },
     profilePicContainer: {
         alignItems: 'center',
         justifyContent: 'center',
@@ -142,13 +185,65 @@ const styles = StyleSheet.create({
     profilePic: {
         transform: [{ scaleX: 1.4 }, { scaleY: 1.4 }]
     },
-    notiContainer:{
-        height: '45%'
+    notiContainer: {
+        // height: '45%'
     },
-    noti:{
+    noti: {
+        display: 'flex',
         flexDirection: 'row',
-        borderWidth: 1,
-        padding: 2,
-        height: 60
-    }
+        height: 80,
+        padding: 14,
+        borderBottomWidth: 0.9,
+        borderColor: Colors.border
+    },
+    listTab: {
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 12,
+        alignSelf: 'center',
+        borderBottomWidth: 1,
+        borderColor: Colors.border
+    },
+    btnTab: {
+        borderWidth: 0.5,
+        borderColor: Colors.greyButton,
+        padding: 8,
+        width: '40%',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    btnTabActive: {
+        backgroundColor: '#FF7F50'
+    },
+    textTab: {
+        color: "#000",
+        fontSize: 16
+    },
+    textTabActive: {
+        color: '#fff'
+    },
+    usersInfo: {
+        backgroundColor: '#F0F0F0',
+        borderRadius: 6,
+        flexGrow: 2,
+        flexDirection: 'column',
+        paddingLeft: 12
+    },
+    firstLastName: {
+        fontWeight: 'bold',
+        fontSize: 20
+    },
+    userName: {
+        fontSize: 16
+    },
+    button: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexGrow: 1,
+        paddingLeft: 10,
+        maxWidth: 80
+    },
 })
