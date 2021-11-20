@@ -157,7 +157,6 @@ export function handleAddFriends(currentUser, userBeingAdded, added) {
     }
 }
 
-
 const styles = StyleSheet.create({
     coursesConainer: {
         justifyContent: 'center',

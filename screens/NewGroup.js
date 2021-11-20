@@ -4,7 +4,7 @@ import {Text, View, StyleSheet, Pressable} from 'react-native';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
 import * as firebase from 'firebase';
 
-import {InputField} from "../components";
+import {IconButton, InputField} from "../components";
 import {Colors} from "../styles";
 
 export const NewGroup = ({navigation}) => {
@@ -18,7 +18,7 @@ export const NewGroup = ({navigation}) => {
 
     async function addUser() {
         let newGroup = groupRef.push();
-        newGroup.set({'name': newGroupName, 'members': [user.uid]});
+        newGroup.set({'name': newGroupName, 'members': [username]});
         let newGroupId = newGroup.key;
 
         userRef.once('value').then((snapshot) => {
@@ -35,10 +35,12 @@ export const NewGroup = ({navigation}) => {
         }).catch(error => {
             console.log(`Error: ${error}`)
         });
+        navigation.navigate("GroupDetails", {groupId: newGroupId, groupName: newGroupName})
     }
 
     return (
         <View style={styles.container}>
+            <Text style={styles.h1}>New Group</Text>
             <InputField
                 inputStyle={{
                     fontSize: 14
@@ -46,7 +48,9 @@ export const NewGroup = ({navigation}) => {
                 containerStyle={{
                     backgroundColor: '#E8E8E8'
                 }}
+                leftIcon='account-group'
                 placeholder = 'Group Name'
+                autoCapitalize='none'
                 autoCorrect={false}
                 onChangeText={text => {
                     setNewGroupName(text);
@@ -59,6 +63,13 @@ export const NewGroup = ({navigation}) => {
     )
 }
 const styles = StyleSheet.create({
+    h1: {
+        color: '#111',
+        fontSize: 30,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        margin: 20
+    },
     input: {
         margin: 15,
         height: 40,
@@ -73,13 +84,14 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         elevation: 3,
         backgroundColor: Colors.orangeButton,
-        marginTop: 10
+        marginTop: 20
     },
     container: {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
         height: '100%',
-        padding: 20
+        padding: 20,
+        backgroundColor: 'white'
     }
 });

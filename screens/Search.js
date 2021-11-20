@@ -21,7 +21,10 @@ const ScreenContainer = ({ children }) => (
     </KeyboardAvoidingView>
 );
 
-const SearchScreen = ({ navigation }) => {
+export const SearchScreen = ({ navigation, route }) => {
+    const {addMember, groupId} = route.params;
+    console.log(addMember);
+
     const db = firebase.database()
     const auth = Firebase.auth()
     const { user } = useContext(AuthenticatedUserContext)
@@ -76,10 +79,72 @@ const SearchScreen = ({ navigation }) => {
         return returnButton[i]
     }
 
+    function checkGroups(username) {
+        let i = 0;
+        let returnButton = [["Add", Colors.orangeButton, false, false], ["Undo", Colors.blackButton, true, false], ["Member", Colors.greyButton, true, true]];
+        const refRequest = db.ref(`groups/${groupId}/requests/sent/`)
+        refRequest.off()
+        refRequest.on('value', (data) => {
+            // console.log(data.val())
+            if(data.val() != null){
+                if(data.val().includes(username)){
+                    // console.log(username + "matched!!!")
+                    i = 1
+                }
+            }
+        })
+        const refFriend = db.ref(`groups/${groupId}/members`)
+        refFriend.off()
+        refFriend.on('value', (data) => {
+            if(data.val() != null){
+                if (data.val().includes(username)){
+                    i = 2
+                }
+            }
+        })
+        return returnButton[i]
+    }
+
+    function handleAddMembers(groupId, currentUser, userBeingAdded, added) {
+        const db = firebase.database();
+        for (let i = 0; i < 2; i++) {
+            let source, target, ref;
+            if (i === 0) {
+                source = userBeingAdded + "/requests/groups/received"
+                // target = currentUser
+                ref = db.ref('users/' + source)
+            } else {
+                source = `${groupId}/requests/sent`
+                // target = userBeingAdded
+                ref = db.ref('groups/' + source)
+            }
+            ref.off()
+            var temp = []
+            if(!added){
+                ref.on('value', (data) => {
+                    console.log(data.val())
+                    if (data.val() != null) {
+                        temp = data.val()
+                    }
+                })
+                if (i === 0) {
+                    temp.push(groupId)
+                    ref.parent.update({
+                        'received': temp
+                    })
+                } else {
+                    temp.push(userBeingAdded)
+                    ref.parent.update({
+                        'sent': temp
+                    })
+                }
+            }
+        }
+    }
 
     const usersList = Object.entries(usersDetail).map((username, index) => {
         // will have three states, 1. add, 2. sent, 3. already friends
-        var [buttonText, buttonColor, added, disable] = checkFriends(username[0])
+        var [buttonText, buttonColor, added, disable] = addMember ? checkGroups(username[0]) : checkFriends(username[0])
         if (username[0] != currentUsername) {
             return (
                 <View key={index}>
@@ -104,7 +169,7 @@ const SearchScreen = ({ navigation }) => {
                         <View style={styles.addButton}>
                             <Button
                                 disabled={disable}
-                                onPress={() => { handleAddFriends(currentUsername, username[0], added) }}
+                                onPress={() => { addMember ? handleAddMembers(groupId, currentUsername, username[0], added) : handleAddFriends(currentUsername, username[0], added) }}
                                 backgroundColor={buttonColor}
                                 title={buttonText}
                                 tileColor='#fff'

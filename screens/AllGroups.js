@@ -17,29 +17,28 @@ export const AllGroups = ({navigation}) => {
 
     let fetchGroup = async () => {
         return ref.once("value")
-            .then( (snapshot) => {
+            .then( snapshot => {
                 setGroupList(snapshot.val());
                 setGroupCount(snapshot.val().length);
-            });
+            }).catch(error => {console.log(`Error: ${error}`)});
     };
 
     useEffect( () => {
         ref.on('value', snapshot => {
-            fetchGroup().then();
+            fetchGroup().then().catch(error => {console.log(`Error: ${error}`)});
         });
-        // return () => ref.off('value', onValueChange);
     }, []);
 
     return (
-        <ScrollView style={{padding: 20}}>
-            <Text style={styles.h1}>Your Group</Text>
+        <ScrollView style={{padding: 20, backgroundColor: 'white'}}>
+            <Text style={styles.h1}>Your Groups</Text>
             <Button
                 onPress={() => navigation.navigate("NewGroup")}
                 backgroundColor={Colors.orangeButton}
                 title="Create New Group"
                 titleColor="#fff"
                 titleSize={16}
-                containerStyle={{padding: 16, marginTop: 10, marginBottom: 10}}
+                containerStyle={{padding: 16, marginTop: 20, marginBottom: 20}}
             />
             {
                 groupCount ?
@@ -85,5 +84,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
         margin: 10
+    },
+    baseView: {
+
     }
 })
