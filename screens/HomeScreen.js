@@ -21,7 +21,7 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <StatusBar style='dark-content' />
       <View style={styles.row}>
-        <Text style={styles.title}>Welcome {user.email}!</Text>
+        <Text style={styles.title}>Welcome Back, {user.email}!</Text>
         <IconButton
           name='logout'
           size={24}
@@ -37,7 +37,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#e93b81',
+    backgroundColor: '#fff',
     paddingTop: 50,
     paddingHorizontal: 12
   },
