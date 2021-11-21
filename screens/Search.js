@@ -22,7 +22,7 @@ const ScreenContainer = ({ children }) => (
 );
 
 export const SearchScreen = ({ navigation, route }) => {
-    let addMember;
+    let addMember = false;
     let groupId;
     if (route.params === undefined) {
         addMember = false;
@@ -44,7 +44,7 @@ export const SearchScreen = ({ navigation, route }) => {
         const ref = db.ref('users/')
         ref.off()
         ref.on('value', (data) => {
-            // console.log(data)
+            // console.log(data.val()['twchim01']['displayName'])
             setUsersDetail(data.val())
             setUsersDetail2(data.val())
         })
@@ -171,8 +171,12 @@ export const SearchScreen = ({ navigation, route }) => {
                             </View>
                         </View>
                         <View style={styles.usersInfo}>
-                            <Text style={styles.firstLastName}>{'First Last'}</Text>
-                            <Text style={styles.userName}>{'@' + username[0]}</Text>
+                            <Text style={styles.displayName}>
+                                {usersDetail[username[0]]['displayName']}
+                            </Text>
+                            <Text style={styles.userName}>
+                                {'@' + username[0]}
+                            </Text>
                         </View>
                         <View style={styles.addButton}>
                             <Button
@@ -255,6 +259,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         flexGrow: 1,
+        minWidth: 50,
+        maxWidth: 70
         // maxWidth: 80
     },
     profilePic: {
@@ -267,7 +273,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         paddingLeft: 12
     },
-    firstLastName: {
+    displayName: {
         fontWeight: 'bold',
         fontSize: 20
     },

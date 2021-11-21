@@ -105,6 +105,13 @@ export const Notifications = ({ navigation }) => {
     const friendsRequestsList = friendRequests.map((element, index) => {
         console.log(element)
         console.log(index)
+
+        const refDisplayName = db.ref('users/' + element + '/displayName')
+        let displayName = ''
+        refDisplayName.off()
+        refDisplayName.on('value', (data) => {
+            displayName = data.val()
+        })
         return (
             <View key={index} style={styles.noti}>
                 <View style={styles.profilePicContainer}>
@@ -116,8 +123,12 @@ export const Notifications = ({ navigation }) => {
                     </View>
                 </View>
                 <View style={styles.usersInfo}>
-                    <Text style={styles.firstLastName}>{'First Last'}</Text>
-                    <Text style={styles.userName}>{'@' + element}</Text>
+                    <Text style={styles.displayName}>
+                        {displayName}
+                    </Text>
+                    <Text style={styles.userName}>
+                        {'@' + element}
+                    </Text>
                 </View>
                 <View style={styles.button}>
                     <Button
@@ -142,8 +153,8 @@ export const Notifications = ({ navigation }) => {
     })
 
     function renderList() {
-        console.log(status)
-        return status === 'Friend' ? friendsRequestsList : friendsRequestsList // Change to groupRe
+        // console.log(status)
+        return status === 'Friend' ? friendsRequestsList : friendsRequestsList // <Text style={{ fontSize: 40 }}>No Group Invitations</Text> // Change to groupInvitationList
     }
 
     return (
@@ -178,9 +189,12 @@ const styles = StyleSheet.create({
         ...Base.page
     },
     profilePicContainer: {
+        // backgroundColor: '#000',
         alignItems: 'center',
         justifyContent: 'center',
-        flexGrow: 1
+        flexGrow: 1,
+        minWidth: 50,
+        maxWidth: 70
     },
     profilePic: {
         transform: [{ scaleX: 1.4 }, { scaleY: 1.4 }]
@@ -191,6 +205,7 @@ const styles = StyleSheet.create({
     noti: {
         display: 'flex',
         flexDirection: 'row',
+        justifyContent: 'space-between',
         height: 80,
         padding: 14,
         borderBottomWidth: 0.9,
@@ -216,7 +231,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     btnTabActive: {
-        backgroundColor: '#FF7F50'
+        backgroundColor: '#ff8243'
     },
     textTab: {
         color: "#000",
@@ -230,9 +245,10 @@ const styles = StyleSheet.create({
         borderRadius: 6,
         flexGrow: 2,
         flexDirection: 'column',
-        paddingLeft: 12
+        paddingLeft: 12,
+        maxWidth: 170
     },
-    firstLastName: {
+    displayName: {
         fontWeight: 'bold',
         fontSize: 20
     },
