@@ -43,6 +43,7 @@ export const Home = ({ navigation }) => {
   const [toggleValue, setToggleValue] = useState();
   const [friendsNumber, setFriendsNumber] = useState();
   const [displayName, setDisplayName] = useState();
+  const noSavedCoursesText = '[No Saved Courses]'
   //const [image, setImage] = useState(null);
   //const addImage=()=>{};
 
@@ -105,7 +106,7 @@ export const Home = ({ navigation }) => {
       }
 
     })
-    
+
   }, []);
 
   const handleSignOut = async () => {
@@ -148,8 +149,8 @@ export const Home = ({ navigation }) => {
     // alert(course[1])
     if (course[1] == 'empty') {
       return (
-        <View key={index} style={styles.courses}>
-          <Text style={styles.courseTitle}>No saved course yet!</Text>
+        <View key={index} style={styles.unavailableTextContainer}>
+          <Text style={styles.unavailableText}>{noSavedCoursesText}</Text>
         </View>
       )
     }
@@ -165,8 +166,8 @@ export const Home = ({ navigation }) => {
     // alert(course[1])
     if (course[1] == 'empty') {
       return (
-        <View key={index} style={styles.courses}>
-          <Text style={styles.courseTitle}>No saved course yet!</Text>
+        <View key={index} style={styles.unavailableTextContainer}>
+          <Text style={styles.unavailableText}>{noSavedCoursesText}</Text>
         </View>
       )
     }
@@ -189,11 +190,7 @@ export const Home = ({ navigation }) => {
   return (
     <ScreenContainer>
       <StatusBar style='dark-content' />
-      <View style={styles.row, { flexDirection: 'column' }, {
-        justifyContent: 'center',
-        alignItems: 'center', paddingBottom: 0
-      }}>
-        <View style={{ paddingBottom: 0 }}>
+      <View style={styles.proPicContainer}>
           {/* clickable function is not working*/}
           <TouchableOpacity onPress={Linking}>
             <Image
@@ -204,12 +201,11 @@ export const Home = ({ navigation }) => {
               }}
             />
           </TouchableOpacity>
-        </View>
       </View>
-      <View style={{ flexDirection: 'row', alignItems: 'center', height: '15%', justifyContent: 'space-between', paddingHorizontal: '8%', marginBottom:'8%', marginTop:'3%'}}>
-        <View style={{ width: 'auto', height: '100%', justifyContent: 'center', }}>
-          <Text style={styles.title}>{displayName}</Text>
-          <Text style={styles.username}>@{user.email.substring(0, user.email.length - 10)}</Text>
+      <View style={styles.userInfoContainer}>
+        <View style={styles.namesContainer}>
+          <Text style={styles.displayName}>{displayName}</Text>
+          <Text style={styles.userName}>@{user.email.substring(0, user.email.length - 10)}</Text>
           <View style={styles.toggleSwitch}>
             <ToggleSwitch
               text={{ on: 'Public', off: 'Private', activeTextColor: 'white', inactiveTextColor: 'white' }}
@@ -227,11 +223,12 @@ export const Home = ({ navigation }) => {
 
           </View>
         </View>
+        
 
-        <View style={{ width: '25%', height: '100%', justifyContent: 'center', alignItems: 'center', }}>
+        <View style={styles.friendsContainer}>
 
-          <Text style={{ fontSize: 28, fontWeight: 'bold' }}>{friendsNumber}</Text>
-          <Text style={{ fontSize: 20 }}>Friends</Text>
+          <Text style={styles.friendsNumber}>{friendsNumber}</Text>
+          <Text style={styles.friendsText}>Friends</Text>
           <View style={styles.button}>
             <Button
               onPress={handleSignOut}
@@ -248,41 +245,18 @@ export const Home = ({ navigation }) => {
       </View>
 
 
-
-
-
-
-
-      {/*<View style={styles.switch, {flexDirection: 'row'}}>
-        
-        <View style={styles.toggleSwitch}>
-          <ToggleSwitch
-              text={{ on: 'Public', off: 'Private', activeTextColor: 'white', inactiveTextColor: 'white' }}
-              textStyle={{ fontWeight: 'bold' }}
-              color={{ indicator: Colors.orangeButton, active: 'black', inactive: 'black', activeBorder: 'black', inactiveBorder: 'black' }}
-              active={true}
-              disabled={false}
-              width={80}
-              radius={25}
-              onValueChange={(val) => {
-                setToggleValue(!toggleValue);
-                changeMode()
-              }}
-            />
-        </View>
-            </View>*/}
-
+      <View style={styles.addButton}></View>
       <View style={{ flex: 1 }}>
         <Swiper style={styles.wrapper} showsButtons={false}>
           <View style={styles.slide1}>
-            <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 20, marginBottom: 10 }}>2021-2022 Sem 1</Text>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <Text style={styles.semTitle}>2021-2022 Sem 1</Text>
+            <View style={styles.coursesConainer}>
               {selectedCoursesOne}
             </View>
           </View>
           <View style={styles.slide2}>
-            <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 20, marginBottom: 10 }}>2021-2022 Sem 2</Text>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <Text style={styles.semTitle}>2021-2022 Sem 2</Text>
+            <View style={styles.coursesConainer}>
               {selectedCoursesTwo}
             </View>
           </View>
@@ -330,28 +304,38 @@ const styles = StyleSheet.create({
     //backgroundColor: '#97CAE5'
   },
   courses: {
-    height: 50,
-    borderWidth: 3,
-    borderRadius: 5,
-    margin: 3,
-    width: '80%',
+    backgroundColor: '#F0F0F0',
+    borderColor: '#707070',
+    display: 'flex',
+    alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f57c00'
+    // flexBasis: '40%',
+    borderWidth: 1.5,
+    borderRadius: 4,
+    marginHorizontal: 10,
+    marginVertical: 5,
+    padding: 8,
+    height: 100,
+    width: '70%'
   },
   havecourses: {
-    height: 50,
-    borderWidth: 3,
-    borderRadius: 5,
-    margin: 3,
-    width: '40%',
+    backgroundColor: '#F0F0F0',
+    borderColor: '#707070',
+    display: 'flex',
+    alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f57c00'
+    flexBasis: '40%',
+    borderWidth: 1.5,
+    borderRadius: 4,
+    marginHorizontal: 10,
+    marginVertical: 5,
+    height: 40
   },
   courseTitle: {
     fontWeight: 'bold',
     textAlign: 'center'
   },
-  title: {
+  displayName: {
     //...Typography.title,
     fontSize: 28,
     //paddingBottom:3,
@@ -359,7 +343,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
 
   },
-  username: {
+  userName: {
     //...Typography.title,
     fontSize: 20,
     //paddingBottom:3,
@@ -415,4 +399,75 @@ const styles = StyleSheet.create({
     transform: [{ scaleX: 0.65 }, { scaleY: 0.65 }],
     marginBottom: -28,
   },
+  unavailableTextContainer: {
+    paddingVertical: '20%',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  unavailableText: {
+    fontSize: 20,
+    color: '#808080',
+    fontStyle: 'italic',
+    // fontWeight: 'bold'
+  },
+  addButton: {
+    borderBottomWidth: 2,
+    borderColor: Colors.border,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: '5%'
+},
+semTitle: {
+  textAlign: 'center',
+  fontWeight: 'bold',
+  fontSize: 20,
+  paddingVertical: 10
+},
+coursesConainer: {
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  justifyContent: 'center'
+},
+friendsText: {
+    fontSize: 20
+},
+friendsNumber: {
+  // alignItems: 'center',
+  fontSize: 28,
+  fontWeight: 'bold'
+},
+friendsContainer: {
+  // backgroundColor: 'grey',
+  width: '25%',
+  height: '100%',
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+namesContainer: {
+  // backgroundColor: '#C0C0C0',
+  // paddingHorizontal: 12,
+  // borderRadius: 10,
+  width: 'auto',
+  height: '100%',
+  justifyContent: 'center',
+},
+userInfoContainer: {
+  // backgroundColor: 'grey',
+  //justifyContent: 'center',
+  alignItems: 'center',
+  height: '15%',
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  paddingHorizontal: '8%',
+  marginBottom: '8%', //new
+  marginTop: '3%' //new
+},
+proPicContainer: {
+  justifyContent: 'center',
+  alignItems: 'center',
+  paddingTop: 10,
+  height: '25%',
+  // backgroundColor: '#000'
+}
 });
