@@ -159,7 +159,7 @@ export const SearchScreen = ({ navigation, route }) => {
                     <TouchableOpacity
                         style={styles.usersList}
                         onPress={() => {
-                            navigation.navigate('Friend', { currentUser: currentUsername, userBeingSearch: username[0] })
+                            navigation.navigate('Profile', { currentUser: currentUsername, userBeingSearch: username[0] })
                         }}
                     >
                         <View style={styles.profilePicContainer}>
@@ -229,7 +229,7 @@ export const Search = ({ navigation }) => {
     return (
         <Stack.Navigator initialRouteName="Search">
             <Stack.Screen name="User Search" component={SearchScreen} />
-            <Stack.Screen name="Friend" component={UserProfile} />
+            <Stack.Screen name="Profile" component={UserProfile} />
         </Stack.Navigator>
     )
 }
