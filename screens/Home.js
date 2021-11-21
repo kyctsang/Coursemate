@@ -105,6 +105,7 @@ export const Home = ({ navigation }) => {
       }
 
     })
+    
   }, []);
 
   const handleSignOut = async () => {
