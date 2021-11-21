@@ -191,13 +191,13 @@ export const Home = ({ navigation }) => {
     <ScreenContainer>
       <StatusBar style='dark-content' />
       <View style={styles.proPicContainer}>
-          {/* clickable function is not working*/}
-          <TouchableOpacity onPress={Linking}>
-            <Image
-              style={styles.tinyLogo}
-              source={require('../assets/emptyProPic.png')}
-            />
-          </TouchableOpacity>
+        {/* clickable function is not working*/}
+        <TouchableOpacity onPress={Linking}>
+          <Image
+            style={styles.tinyLogo}
+            source={require('../assets/emptyProPic.png')}
+          />
+        </TouchableOpacity>
       </View>
       <View style={styles.userInfoContainer}>
         <View style={styles.namesContainer}>
@@ -220,7 +220,7 @@ export const Home = ({ navigation }) => {
 
           </View>
         </View>
-        
+
 
         <View style={styles.friendsContainer}>
 
@@ -414,57 +414,57 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: '5%'
-},
-semTitle: {
-  textAlign: 'center',
-  fontWeight: 'bold',
-  fontSize: 20,
-  paddingVertical: 10
-},
-coursesConainer: {
-  flexDirection: 'row',
-  flexWrap: 'wrap',
-  justifyContent: 'center'
-},
-friendsText: {
+  },
+  semTitle: {
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 20,
+    paddingVertical: 10
+  },
+  coursesConainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center'
+  },
+  friendsText: {
     fontSize: 20
-},
-friendsNumber: {
-  // alignItems: 'center',
-  fontSize: 28,
-  fontWeight: 'bold'
-},
-friendsContainer: {
-  // backgroundColor: 'grey',
-  width: '25%',
-  height: '100%',
-  justifyContent: 'center',
-  alignItems: 'center',
-},
-namesContainer: {
-  // backgroundColor: '#C0C0C0',
-  // paddingHorizontal: 12,
-  // borderRadius: 10,
-  width: 'auto',
-  height: '100%',
-  justifyContent: 'center',
-},
-userInfoContainer: {
-  // backgroundColor: 'grey',
-  //justifyContent: 'center',
-  alignItems: 'center',
-  height: '15%',
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  paddingHorizontal: '8%',
-  marginBottom: '8%', //new
-  marginTop: '3%' //new
-},
-proPicContainer: {
-  justifyContent: 'center',
-  alignItems: 'center',
-  paddingTop: 10,
-  height: '25%',
-  // backgroundColor: '#000'
-}
+  },
+  friendsNumber: {
+    // alignItems: 'center',
+    fontSize: 28,
+    fontWeight: 'bold'
+  },
+  friendsContainer: {
+    // backgroundColor: 'grey',
+    width: '25%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  namesContainer: {
+    // backgroundColor: '#C0C0C0',
+    // paddingHorizontal: 12,
+    // borderRadius: 10,
+    width: 'auto',
+    height: '100%',
+    justifyContent: 'center',
+  },
+  userInfoContainer: {
+    // backgroundColor: 'grey',
+    //justifyContent: 'center',
+    alignItems: 'center',
+    height: '15%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: '8%',
+    marginBottom: '8%', //new
+    marginTop: '3%' //new
+  },
+  proPicContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 10,
+    height: '25%',
+    // backgroundColor: '#000'
+  }
 });
