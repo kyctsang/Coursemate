@@ -40,6 +40,7 @@ export const Home = ({ navigation }) => {
   const username = user.email.substring(0,user.email.length-10)
   const [toggleValue, setToggleValue] = useState();
   const [friendsNumber, setFriendsNumber] = useState();
+  const [displayName, setDisplayName] = useState();
   //const [image, setImage] = useState(null);
   //const addImage=()=>{};
 
@@ -98,6 +99,7 @@ export const Home = ({ navigation }) => {
       }else{
         console.log("PUBLIX:" + data.val().public)
         setToggleValue(data.val().public)
+        setDisplayName(data.val().displayName)
       }
       
     })
@@ -227,14 +229,11 @@ export const Home = ({ navigation }) => {
         
           </View>
           <View style={{flexDirection: 'row', alignItems:'center'} }>
-            <View style={{flexDirection: 'row', paddingBottom: 10}}>
-              
-            
-              <Text style={styles.title}>{user.email.substring(0,user.email.length-10)} </Text>
-              
-            
+            <View style={{flexDirection: 'column', paddingBottom: 10}}>
+              <Text style={styles.title}>{displayName}</Text>
+              <Text style={styles.username}>@{user.email.substring(0,user.email.length-10)}</Text>
             </View>
-            <View style={{width: 100}}></View>
+            <View style={{width: 120}}></View>
             <View style={{flexDirection: 'column'} }>
 
               <Text style={{textAlign: 'center', fontSize:17, fontWeight:'bold', paddingLeft:30}}>{friendsNumber}</Text>
@@ -350,9 +349,17 @@ const styles = StyleSheet.create({
   },
   title: {
     ...Typography.title,
-    fontSize: 23,
+    fontSize: 20,
     paddingBottom:3,
     paddingTop:3
+
+  },
+  username: {
+    ...Typography.title,
+    fontSize: 17,
+    paddingBottom:3,
+    paddingTop:3,
+    color:'#6a6969'
 
   },
   text: {
