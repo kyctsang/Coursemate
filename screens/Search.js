@@ -278,7 +278,8 @@ const styles = StyleSheet.create({
         fontSize: 20
     },
     userName: {
-        fontSize: 16
+        fontSize: 16,
+        fontStyle: 'italic'
     },
     addButton: {
         alignItems: 'center',
