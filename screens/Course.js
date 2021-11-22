@@ -41,7 +41,7 @@ export const Course = ({ navigation }) => {
 
     const { user } = useContext(AuthenticatedUserContext);
     const day = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri']
-    const slot = ['', '08:30', '09:30', '10:30', '11:30', '12:30', '13:30', '14:30', '15:30', '16:30', '17:30', '18:30', '19:30']
+    const slot = ['', '08:30', '09:30', '10:30', '11:30', '12:30', '13:30', '14:30', '15:30', '16:30', '17:30', '18:30', '19:30', '20:30']
 
 
     useEffect(() => {
@@ -212,23 +212,23 @@ export const Course = ({ navigation }) => {
         // console.log(course[1].section)
         return (
             Object.entries(course[1].section).map((timeslots, index2) => {
-                // console.log(course[0] + " " + timeslots[0])
+                console.log(course[0] + " " + timeslots[1])
                 var timeslot = ""
                 var check_day = 0
                 var temp = [0, 0, 0, 0, 0, 0]
                 var temp2 = [0, 0, 0, 0, 0, 0]
                 var pad = ""
                 timeslots[1].forEach((slot, index3) => {
-                    // console.log(slot)
+                    console.log(slot.substring(2))
                     temp[slot[0]] += 1
                     if (check_day != slot[0]) {
-                        temp2[slot[0]] = parseInt(slot[2])
+                        temp2[slot[0]] = parseInt(slot.substring(2))
                     }
                     check_day = slot[0]
                 })
                 temp.forEach((element, index3) => {
                     if (element != 0) {
-                        var end = slot[temp2[index3] + element].substring(0,3) + "20"
+                        var end = slot[temp2[index3] + element ].substring(0,3) + "20"
                         timeslot += pad + '(' + day[index3] + ') ' + slot[temp2[index3]] + '⁠–' + end
                     }
                     if (timeslot != "") {
