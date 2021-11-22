@@ -1,11 +1,12 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {Alert, Pressable, ScrollView, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View} from "react-native";
+import {Pressable, ScrollView, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View} from "react-native";
 
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
 import * as firebase from 'firebase';
 
 import {Colors} from "../styles";
 import {Button} from "../components";
+import {BottomModal, useBottomModal} from "react-native-lightning-modal";
 
 export const GroupDetails = ({ navigation, route }) => {
     const {groupId, groupName} = route.params;
@@ -18,7 +19,10 @@ export const GroupDetails = ({ navigation, route }) => {
     const userRef = db.ref(`users/${username}`);
 
     const [members, setMembers] = useState({});
-    const [meetingTime, setMeetingTime] = useState(null);
+    const [meetingTime, setMeetingTime] = useState(undefined);
+
+    const [message, setMessage] = useState("");
+    const { dismiss, show, modalProps } = useBottomModal();
 
     useEffect(() => {
         try {
@@ -34,6 +38,10 @@ export const GroupDetails = ({ navigation, route }) => {
         } catch (error) {
             console.log(`Error: ${error.stackTrace}`);
         }
+        // return () => {
+        //     setMembers({});
+        //     setMeetingTime(null);
+        // }
     }, []);
 
     function deleteMember(target) {
@@ -61,54 +69,67 @@ export const GroupDetails = ({ navigation, route }) => {
                 const updates = {};
                 updates["groups"] = userGroups
             userRef.update(updates);
-        })
-
-        Alert.alert(`${target} has been removed.`);
+        }).catch(error => {console.log(`Error: ${error.stackTrace}`)});
+        setMessage(`${target} has been removed.`);
+        show();
     }
 
     async function deleteGroup(id) {
 
     }
 
-    const memberList = Object.entries(members).map(([id, username], index) => {
-        return (
-            <View style={styles.item}
-                  key={id}>
-                <TouchableHighlight>
-                    <Text style={styles.username}>{username}</Text>
-                </TouchableHighlight>
-                <Button
-                    onPress={() => deleteMember(username)}
-                    backgroundColor={Colors.redButton}
-                    title="Remove"
-                    titleColor="#fff"
-                    titleSize={16}
-                    containerStyle={{padding: 10, width: 90, maxHeight: 30}}
-                />
-            </View>
-
-        )
+    const memberList = Object.entries(members).map(([id, membersName], index) => {
+        try {
+            return (
+                <View style={styles.item}
+                      key={id}>
+                    <TouchableHighlight>
+                        <Text style={styles.username}>@{membersName}</Text>
+                    </TouchableHighlight>
+                    {
+                        membersName === username ?
+                            <View/> :
+                            <Button
+                                onPress={() => deleteMember(membersName)}
+                                backgroundColor={Colors.redButton}
+                                title="Remove"
+                                titleColor="#fff"
+                                titleSize={16}
+                                containerStyle={{padding: 10, width: 90, maxHeight: 30}}
+                            />
+                    }
+                </View>
+            )
+        } catch (error) {
+            console.log(`Error: ${error.stackTrace}`);
+        }
     });
 
     return(
         <View style={styles.container}>
             <Text style={[styles.heading, styles.h1]}>{groupName}</Text>
-            {meetingTime != null ? <Text style={styles.h3}>{meetingTime}</Text> : <Text />}
+            {meetingTime !== undefined ? <Text style={styles.h3}>{meetingTime}</Text> : <Text />}
             <Text style={[styles.heading, styles.h2]}>Group members</Text>
             <ScrollView containerStyle={styles.memberList} style={styles.memberContainer}>
                 {memberList}
             </ScrollView>
-            <Pressable style={[styles.button, styles.greenButton]}
+            <Pressable style={[styles.button, styles.orangeButton]}
                 onPress={() => navigation.navigate("Search", {addMember: true, groupId: groupId})}>
                 <Text style={{color: 'white'}}>Add Members</Text>
             </Pressable>
-            <Pressable style={[styles.button, styles.blueButton]}
+            <Pressable style={[styles.button, styles.orangeButton]}
                 onPress={() => navigation.navigate("MeetingTime", {groupId: groupId})}>
                 <Text style={{color: 'white'}}>New Meeting Time</Text>
             </Pressable>
             <Pressable style={[styles.button, styles.redButton]}>
                 <Text style={{color: 'white'}}>Delete Group</Text>
             </Pressable>
+            <BottomModal backdropColor="rgba(0,0,0,0.5)" height={350} {...modalProps} >
+                <TouchableOpacity style={styles.fill} onPress={dismiss}>
+                    <Text style={styles.message}>{message}</Text>
+                    <Text style={styles.close}>Tap to close</Text>
+                </TouchableOpacity>
+            </BottomModal>
         </View>
     )
 }
@@ -160,8 +181,9 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: 10,
-        borderColor: '#2a4944',
+        borderColor: '#56d9c0',
         borderWidth: 1,
+        height: 45,
     },
     username: {
         fontSize: 14
@@ -173,5 +195,33 @@ const styles = StyleSheet.create({
         height: '100%',
         backgroundColor: 'white',
         padding: 20
+    },
+    fill: {
+        flex: 1,
+        width: '100%',
+        paddingTop: 50,
+        alignItems: 'center'
+    },
+    message: {
+        fontSize: 20,
+        textAlign: 'center'
+    },
+    clashed: {
+        fontSize: 25
+    },
+    saveButton: {
+        position: 'absolute',
+        backgroundColor: '#f57c00',
+        bottom: 300,
+        minHeight: 40,
+        width: '50%',
+        borderRadius: 10,
+        justifyContent: 'center'
+    },
+    close: {
+        fontSize: 15,
+        color: '#c2b38a',
+        position: 'absolute',
+        bottom: 200
     }
 });

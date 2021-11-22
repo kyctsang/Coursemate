@@ -27,6 +27,7 @@ export const AllGroups = ({navigation}) => {
         ref.on('value', snapshot => {
             fetchGroup().then().catch(error => {console.log(`Error: ${error}`)});
         });
+        return () => {};
     }, []);
 
     return (
@@ -67,16 +68,26 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         margin: 10
     },
+    // item: {
+    //     flexDirection: 'row',
+    //     justifyContent: 'space-between',
+    //     alignItems: 'center',
+    //     padding: 20,
+    //     margin: 10,
+    //     borderColor: '#2a4944',
+    //     borderWidth: 1,
+    //     borderRadius: 5,
+    //     backgroundColor: '#d2f7f1'
+    // },
     item: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: 20,
-        margin: 10,
-        borderColor: '#2a4944',
-        borderWidth: 1,
+        height: 50,
+        borderWidth: 3,
         borderRadius: 5,
-        backgroundColor: '#d2f7f1'
+        margin: 3,
+        width:'98%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#f57c00'
     },
     p: {
         color: '#111',

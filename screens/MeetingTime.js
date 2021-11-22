@@ -2,10 +2,20 @@ import React, {useContext, useEffect, useState} from 'react';
 
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
 import * as firebase from 'firebase';
-import {ScrollView, StyleSheet, Text, TouchableHighlight, View, Picker, Pressable, Alert} from "react-native";
+import {
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableHighlight,
+    View,
+    Picker,
+    Pressable,
+    TouchableOpacity
+} from "react-native";
 import { RadioButton } from 'react-native-paper';
 import {Button} from "../components";
 import {Colors} from "../styles";
+import {BottomModal, useBottomModal} from "react-native-lightning-modal";
 
 export const MeetingTime = ({ navigation, route }) => {
     const {groupId} = route.params;
@@ -43,6 +53,10 @@ export const MeetingTime = ({ navigation, route }) => {
     const [membersCourses, setMembersCourses] = useState([]);
     const [coursesTimeslots, setCoursesTimeslots] = useState([]);
 
+    const [message, setMessage] = useState("");
+    const { dismiss, show, modalProps } = useBottomModal();
+    const [leavePage, setLeavePage] = useState(false);
+
     const [checked, setChecked] = useState("");
 
     const timeList = Object.entries(meetingTimeslots).map(([idx, time]) => {
@@ -72,6 +86,7 @@ export const MeetingTime = ({ navigation, route }) => {
         } catch(error) {
             console.log(`Error: ${error.stackTrace}`)
         }
+        // return () => {setGroupMembers([])};
     }, [meetingDay, meetingLength]);
 
     useEffect(() => {
@@ -91,6 +106,9 @@ export const MeetingTime = ({ navigation, route }) => {
         } catch(error) {
             console.log(`Error: ${error.stackTrace}`)
         }
+        // return () => {
+        //     setMembersCourses([]);
+        // }
     }, [groupMembers]);
 
     useEffect(() => {
@@ -114,6 +132,9 @@ export const MeetingTime = ({ navigation, route }) => {
         } catch(error) {
             console.log(`Error: ${error.stackTrace}`)
         }
+        // return () => {
+        //     setCoursesTimeslots([]);
+        // }
     }, [membersCourses]);
 
     /* useEffect on [meetingDay]
@@ -156,19 +177,28 @@ export const MeetingTime = ({ navigation, route }) => {
             // console.log(availableStartTimeslots);
             // console.log(timeslots);
         }
-
+        // return () => {
+        //     setMeetingTimeslots([]);
+        //
+        // }
     }, [meetingDay, meetingLength]);
 
     function handleConfirmTimeslot(time) {
         console.log(time);
         if (time === "" || time === undefined ) {
-            Alert.alert("Please select a timeslot.");
+            setMessage("Please select a timeslot.");
+            show();
             return;
         }
         const updates = {};
         updates["meetingTime"] = meetingDay + " " + time;
         groupRef.update(updates);
-        Alert.alert(`Next meeting is set on ${meetingDay + " " + time}.`);
+        setMessage(`Next meeting is set on\n${meetingDay + " " + time}.`);
+        show();
+        setLeavePage(true);
+    }
+
+    function dismissNavigate() {
         navigation.navigate("GroupDetails", {groupId: groupId});
     }
 
@@ -210,6 +240,12 @@ export const MeetingTime = ({ navigation, route }) => {
                        onPress={() => handleConfirmTimeslot(checked)}>
                 <Text style={{color: 'white'}}>Confirm Meeting Time</Text>
             </Pressable>
+            <BottomModal backdropColor="rgba(0,0,0,0.5)" height={350} {...modalProps} >
+                <TouchableOpacity style={styles.fill} onPress={leavePage ? () => {dismissNavigate()} : dismiss}>
+                    <Text style={styles.message}>{message}</Text>
+                    <Text style={styles.close}>Tap to close</Text>
+                </TouchableOpacity>
+            </BottomModal>
         </View>
     )
 }
@@ -259,7 +295,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 32,
         borderRadius: 4,
         elevation: 3,
-        backgroundColor: Colors.greyButton,
+        backgroundColor: Colors.blackButton,
         marginTop: 20,
         width: '100%'
 
@@ -290,5 +326,33 @@ const styles = StyleSheet.create({
         height: '100%',
         backgroundColor: 'white',
         padding: 20
+    },
+    fill: {
+        flex: 1,
+        width: '100%',
+        paddingTop: 50,
+        alignItems: 'center'
+    },
+    message: {
+        fontSize: 20,
+        textAlign: 'center'
+    },
+    clashed: {
+        fontSize: 25
+    },
+    saveButton: {
+        position: 'absolute',
+        backgroundColor: '#f57c00',
+        bottom: 300,
+        minHeight: 40,
+        width: '50%',
+        borderRadius: 10,
+        justifyContent: 'center'
+    },
+    close: {
+        fontSize: 15,
+        color: '#c2b38a',
+        position: 'absolute',
+        bottom: 200
     }
 });
