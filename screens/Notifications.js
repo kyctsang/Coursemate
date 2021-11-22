@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     btnTabActive: {
-        backgroundColor: '#ff8243'
+        backgroundColor: 'grey'
     },
     textTab: {
         color: "#000",
