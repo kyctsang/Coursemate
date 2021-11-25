@@ -27,7 +27,7 @@ export default function HomeStack() {
       }}
     >
       <Tabs.Screen
-        name="Course Timetable Validator"
+        name="Course Schedule Planner"
         component={Course}
         options={{
           tabBarLabel: 'Course',
