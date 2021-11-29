@@ -35,7 +35,7 @@ export const NewGroup = ({navigation}) => {
         }).catch(error => {
             console.log(`Error: ${error}`)
         });
-        navigation.navigate("GroupDetails", {groupId: newGroupId, groupName: newGroupName})
+        navigation.navigate("Group Details", {groupId: newGroupId, groupName: newGroupName})
     }
 
     return (

@@ -199,12 +199,12 @@ export const MeetingTime = ({ navigation, route }) => {
     }
 
     function dismissNavigate() {
-        navigation.navigate("GroupDetails", {groupId: groupId});
+        navigation.navigate("Group Details", {groupId: groupId});
     }
 
     return (
         <View style={{padding: 20, backgroundColor: 'white', height: '100%'}}>
-            <Text style={[styles.heading, styles.h1]}>New Meeting Time</Text>
+            {/* <Text style={[styles.heading, styles.h1]}>New Meeting Time</Text> */}
             <ScrollView style={{background: "#FFFFFF"}}>
                 {/* Picker for meeting day */}
                 <Text style={[styles.subHeading, styles.h4]}>Meeting Day</Text>

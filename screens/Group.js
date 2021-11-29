@@ -7,13 +7,15 @@ import {AllGroups} from "./AllGroups";
 import {SearchScreen} from "./Search";
 import {MeetingTime} from "./MeetingTime";
 
-const Stack = createStackNavigator();
-export const Group = ({navigation}) => (
-    <Stack.Navigator initialRouteName="GroupScreen" headerMode="none">
-        <Stack.Screen name="GroupScreen" component={AllGroups} />
-        <Stack.Screen name="GroupDetails" component={GroupDetails}/>
-        <Stack.Screen name="NewGroup" component={NewGroup} />
-        <Stack.Screen name="Search" component={SearchScreen} />
-        <Stack.Screen name="MeetingTime" component={MeetingTime} />
-    </Stack.Navigator>
-)
+export const Group = ({navigation}) => {
+    const Stack = createStackNavigator();
+    return(
+        <Stack.Navigator initialRouteName="Group">
+            <Stack.Screen name="Group" component={AllGroups} />
+            <Stack.Screen name="Group Details" component={GroupDetails}/>
+            <Stack.Screen name="New Group" component={NewGroup} />
+            <Stack.Screen name="Search" component={SearchScreen} />
+            <Stack.Screen name="Meeting Time" component={MeetingTime} />
+        </Stack.Navigator>
+    )
+}

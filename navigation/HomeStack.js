@@ -40,6 +40,7 @@ export default function HomeStack() {
         name="Group"
         component={Group}
         options={{
+          headerShown: false,
           tabBarLabel: 'Group',
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="account-group" color={color} size={size} />

@@ -118,7 +118,7 @@ export const GroupDetails = ({ navigation, route }) => {
                 <Text style={{color: 'white'}}>Add Members</Text>
             </Pressable>
             <Pressable style={[styles.button, styles.orangeButton]}
-                onPress={() => navigation.navigate("MeetingTime", {groupId: groupId})}>
+                onPress={() => navigation.navigate("Meeting Time", {groupId: groupId})}>
                 <Text style={{color: 'white'}}>New Meeting Time</Text>
             </Pressable>
             <Pressable style={[styles.button, styles.redButton]}>

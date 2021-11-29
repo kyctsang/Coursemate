@@ -34,7 +34,7 @@ export const AllGroups = ({navigation}) => {
         <ScrollView style={{padding: 20, backgroundColor: 'white'}}>
             <Text style={styles.h1}>Your Groups</Text>
             <Button
-                onPress={() => navigation.navigate("NewGroup")}
+                onPress={() => navigation.navigate("New Group")}
                 backgroundColor={Colors.orangeButton}
                 title="Create New Group"
                 titleColor="#fff"
@@ -48,7 +48,7 @@ export const AllGroups = ({navigation}) => {
                             key={item.id}
                             style={styles.item}
                             onPress={() => {
-                                navigation.navigate("GroupDetails", {groupId: item.id, groupName: item.name});
+                                navigation.navigate("Group Details", {groupId: item.id, groupName: item.name});
                             }}
                         >
                             <Text>{item.name}</Text>
