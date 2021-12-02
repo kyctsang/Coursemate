@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { View, Text, StyleSheet, Switch, Image, TouchableOpacity, Linking } from "react-native";
 import { Button } from '../components';
 
@@ -46,9 +46,9 @@ export const Home = ({ navigation }) => {
   const noSavedCoursesText = '[No Saved Courses]'
   //const [image, setImage] = useState(null);
   //const addImage=()=>{};
+  var kkk = true
 
-
-
+  
 
   var ref = db.ref('users/' + username + '/friends');
   ref.once('value')
@@ -58,13 +58,15 @@ export const Home = ({ navigation }) => {
     });
   console.log('wtt' + friendsNumber);
 
-  function changeMode() {
-    const ref = db.ref('users/' + username)
+  function changeMode(k) {
+    kkk = k
+    /*const ref = db.ref('users/' + username)
     ref.off()
     ref.on('value', (data) => {
       if (data.val() != null) {
         console.log("not NULL!!!")
-        if (toggleValue) {
+        //setToggleValue(k)
+        if (k) {
           setPrivacy('private')
           ref.update({
             public: false
@@ -77,11 +79,16 @@ export const Home = ({ navigation }) => {
         }
         console.log("inserted")
       }
+    })*/
+    const ref = db.ref('users/' + username)
+    ref.off()
+    ref.on('value', (data) => {
+      ref.update({
+        public: k
+      })
     })
-
+    
   }
-
-
   useEffect(() => {
     // const username = user.email.substring(0,user.email.length-10)
     const ref = db.ref('users/' + username)
@@ -97,11 +104,13 @@ export const Home = ({ navigation }) => {
           sem1: { empty: 'empty' },
           sem2: { empty: 'empty' }
         })
-        setToggleValue(true)
+        kkk = true
+        //setToggleValue(true)
         console.log("inserted")
       } else {
-        console.log("PUBLIX:" + data.val().public)
-        setToggleValue(data.val().public)
+        //console.log("PUBLIX:" + data.val().public)
+        kkk = data.val().public
+        //setToggleValue(data.val().public)
         setDisplayName(data.val().displayName)
       }
 
@@ -184,7 +193,7 @@ export const Home = ({ navigation }) => {
   const [isEnabled, setIsEnabled] = useState(false);
   console.log('hiii' + toggleValue);
   var test = toggleValue;
-  console.log('test' + test);
+  console.log('test:::' + kkk);
 
 
   return (
@@ -192,12 +201,11 @@ export const Home = ({ navigation }) => {
       <StatusBar style='dark-content' />
       <View style={styles.proPicContainer}>
         {/* clickable function is not working*/}
-        <TouchableOpacity onPress={Linking}>
+        
           <Image
             style={styles.tinyLogo}
             source={require('../assets/emptyProPic.png')}
           />
-        </TouchableOpacity>
       </View>
       <View style={styles.userInfoContainer}>
         <View style={styles.namesContainer}>
@@ -208,13 +216,13 @@ export const Home = ({ navigation }) => {
               text={{ on: 'Public', off: 'Private', activeTextColor: 'white', inactiveTextColor: 'white' }}
               textStyle={{ fontWeight: 'bold', fontSize: 22 }}
               color={{ indicator: Colors.orangeButton, active: 'black', inactive: 'black', activeBorder: 'black', inactiveBorder: 'black' }}
-              active={true}
+              active={kkk}
               disabled={false}
               width={80}
               radius={25}
               onValueChange={(val) => {
-                setToggleValue(!toggleValue);
-                changeMode()
+                //setToggleValue(!toggleValue)
+                changeMode(!kkk)
               }}
             />
 
@@ -244,6 +252,7 @@ export const Home = ({ navigation }) => {
 
       <View style={styles.addButton}></View>
       <View style={{ flex: 1 }}>
+        
         <Swiper style={styles.wrapper} showsButtons={false}>
           <View style={styles.slide1}>
             <Text style={styles.semTitle}>2021-2022 Sem 1</Text>
