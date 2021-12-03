@@ -35,7 +35,7 @@
     "react-native-switch-toggle": "^2.2.1",
     "react-native-web": "~0.13.12",
     "rn-toggle-switch": "^1.0.2",
-    "swiper": "^7.2.0"
+    "swiper": "^7.3.1"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
