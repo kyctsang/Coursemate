@@ -274,7 +274,7 @@ export const Notifications = ({ navigation }) => {
         return (
             <View key={index} style={styles.noti}>
                 <View style={styles.groupInfo}>
-                    <Text style={styles.displayName}>
+                    <Text style={styles.groupDisplayName}>
                         {groupName}
                     </Text>
                 </View>
@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
     groupInfo: {
         backgroundColor: '#F0F0F0',
         borderRadius: 6,
-        paddingLeft: 12,
+        padding: 16,
         flexGrow: 2,
         flexDirection: 'column',
         maxWidth: 170
@@ -409,6 +409,10 @@ const styles = StyleSheet.create({
     displayName: {
         fontWeight: 'bold',
         fontSize: 20
+    },
+    groupDisplayName: {
+        fontWeight: 'bold',
+        fontSize: 14
     },
     userName: {
         fontSize: 16
