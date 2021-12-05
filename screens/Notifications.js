@@ -135,6 +135,7 @@ export const Notifications = ({ navigation }) => {
             }
         })
         console.log(`temp: ${temp}`)
+        // setGroupRequests(temp)
         groupRequestsRef.parent.update({'sent':temp})
 
         // user requests received -> delete
@@ -203,6 +204,8 @@ export const Notifications = ({ navigation }) => {
             if (data.val() != null) {
                 setGroupRequests(data.val())
                 console.log(groupRequests)
+            }else{
+                setGroupRequests([])
             }
         })
     }
