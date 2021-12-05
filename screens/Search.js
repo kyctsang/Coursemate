@@ -119,7 +119,7 @@ export const SearchScreen = ({ navigation, route }) => {
             let source, target, ref;
             if (i === 0) {
                 source = userBeingAdded + "/requests/groups/received"
-                // target = currentUser
+                target = groupId
                 ref = db.ref('users/' + source)
             } else {
                 source = `${groupId}/requests/sent`
@@ -128,13 +128,13 @@ export const SearchScreen = ({ navigation, route }) => {
             }
             ref.off()
             var temp = []
+            ref.on('value', (data) => {
+                console.log(data.val())
+                if (data.val() != null) {
+                    temp = data.val()
+                }
+            })
             if(!added){
-                ref.on('value', (data) => {
-                    console.log(data.val())
-                    if (data.val() != null) {
-                        temp = data.val()
-                    }
-                })
                 if (i === 0) {
                     temp.push(groupId)
                     ref.parent.update({
@@ -142,6 +142,25 @@ export const SearchScreen = ({ navigation, route }) => {
                     })
                 } else {
                     temp.push(userBeingAdded)
+                    ref.parent.update({
+                        'sent': temp
+                    })
+                }
+            }
+            else {
+                if (i === 0) {
+                    let idx = temp.indexOf(target)
+                    if (idx > -1) {
+                        temp.splice(idx, 1)
+                    }
+                    ref.parent.update({
+                        'received': temp
+                    })
+                } else {
+                    let idx = temp.indexOf(userBeingAdded)
+                    if (idx > -1) {
+                        temp.splice(idx, 1)
+                    }
                     ref.parent.update({
                         'sent': temp
                     })

@@ -75,6 +75,9 @@ export const GroupDetails = ({ navigation, route }) => {
     }
 
     async function deleteGroup(id) {
+        // for each group members remove their groups
+        // for each group requests sent, remove them
+        // remove group from groups
 
     }
 
