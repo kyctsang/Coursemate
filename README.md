@@ -9,7 +9,7 @@
 ### 1. Clone this repository
 Execute the following command in a local directory:
 </br>
-``` git clone https://github.com/kyctsang/coursemate.git ```.
+``` git clone https://github.com/kyctsang/Coursemate.git ```.
 
 ### 2. Install npm and yarn
 [Download](https://nodejs.org/en/download/) Node.js and npm if not yet installed.
